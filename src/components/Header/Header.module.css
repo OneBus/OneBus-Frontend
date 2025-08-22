@@ -1,0 +1,50 @@
+.header {
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  background-color: var(--primary-blue);
+  color: var(--white);
+  position: fixed;
+  top: 0;
+  /* 1. Modifique a posição para se ajustar à sidebar */
+  left: 250px;
+  right: 0;
+  z-index: 10;
+  transition: left 0.3s ease-in-out; /* 2. Adicione a transição */
+}
+
+/* 3. Nova classe para quando a sidebar estiver fechada */
+.header.sidebarClosed {
+  left: 0;
+}
+
+/* 4. Estilos para o conteúdo esquerdo e o novo botão */
+.leftContent {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  
+}
+
+.menuButton {
+  background: none;
+  border: none;
+  color: var(--white);
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.title h1 {
+  font-size: 1.5rem;
+  margin-right: 276px;
+   /* Garante que não há margem extra */
+}
+
+
+
+
+
