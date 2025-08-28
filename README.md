@@ -5,7 +5,7 @@ No terminal, dentro do projeto  use o comando
 npm install
 ```
 
-Ele vai instalar a pasta node_modules com as dependencias necessárias para rodar o projeto.
+Ele vai instalar a pasta node_modules com as gggdependencias necessárias para rodar o projeto.
 Depois para startar o front e acessar pelo navegador rode:
 ```bash
 npm run dev
