@@ -1,0 +1,177 @@
+/* Estilos para a página de Login */
+.loginContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  /* 1. A MUDANÇA PRINCIPAL ESTÁ AQUI */
+  /* Usamos um gradiente linear que vai de azul até 50% da altura,
+     e de branco de 50% até o final, criando uma divisão nítida. */
+  background: linear-gradient(to bottom, var(--primary-blue, #00A0DC) 50%, white 50%);
+}
+
+.logoPanel {
+  /* 2. O painel do logo agora é transparente para mostrar o fundo do container */
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  position: relative;
+}
+
+/* 3. Removemos o pseudo-elemento '::before' que criava a faixa branca antes */
+/* .logoPanel::before { ... } foi removido */
+
+.logoWrapper {
+  z-index: 1;
+  text-align: center;
+}
+
+
+
+.logoImage {
+  width: 600px;
+  height: auto;
+}
+
+.logoText {
+  margin-top: 1rem;
+  font-size: 2.5rem;
+  color: var(--sidebar-bg, #0f172a);
+  font-weight: 900;
+}
+
+.logoPlus {
+  color: var(--primary-blue, #00A0DC);
+}
+
+.formPanel {
+  /* 4. O painel do formulário também fica transparente */
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.formWrapper {
+  width: 100%;
+  max-width: 400px;
+  padding: 2rem;
+  border-radius: 20px;
+  background-color: white;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+.welcomeText {
+  text-align: center;
+  color: var(--text-muted, #64748b);
+  margin-bottom: 0.5rem;
+}
+
+.appName {
+  color: var(--primary-blue, #00A0DC);
+  font-weight: bold;
+}
+
+.title {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  color: var(--text-dark, #334155);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.inputGroup {
+  margin-bottom: 1.5rem;
+}
+
+.inputGroup label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--text-dark, #334155);
+  font-weight: 500;
+}
+
+.inputGroup input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 20px;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.inputGroup input:focus {
+  outline: none;
+  border-color: var(--primary-blue, #00A0DC);
+  box-shadow: 0 0 0 3px rgba(0, 160, 220, 0.2);
+}
+
+.forgotPassword {
+  text-align: right;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  color: var(--primary-blue, #00A0DC);
+  text-decoration: none;
+}
+
+.loginButton {
+  padding: 1rem;
+  border: none;
+  border-radius: 20px;
+  background-color: var(--primary-blue, #00A0DC);
+  color: white;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.loginButton:hover {
+  background-color: #0082b3;
+}
+
+/* Estilos para o conteúdo do Modal */
+.modalContent {
+  text-align: center;
+}
+
+.modalContent h3 {
+  margin-bottom: 1rem;
+}
+
+.modalContent p {
+  margin-bottom: 1.5rem;
+  color: var(--text-muted);
+}
+
+.modalButton {
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: 8px;
+  background-color: var(--primary-blue, #00A0DC);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 800px) {
+  .loginContainer {
+    grid-template-columns: 1fr;
+  }
+  .logoPanel {
+    display: none; /* Oculta o painel do logo em telas pequenas */
+  }
+  .formWrapper {
+    box-shadow: none;
+  }
+}

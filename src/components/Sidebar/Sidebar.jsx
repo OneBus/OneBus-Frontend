@@ -16,11 +16,11 @@ const menuItems = [
   { path: '/usuarios', name: 'Usuários', icon: <FaUsers /> },
 ];
 
-function Sidebar({ isOpen }) {
+function Sidebar({ isOpen, onLogoutClick}) {
   // 2. Crie a classe dinâmica baseada no estado 'isOpen'
   const sidebarClass = `${styles.sidebar} ${isOpen ? styles.open : ''}`;
 
-  return (
+return (
     <div className={sidebarClass}>
       <div className={styles.logo}>
         <FaBus size={30} />
@@ -40,7 +40,8 @@ function Sidebar({ isOpen }) {
           </NavLink>
         ))}
       </nav>
-      <div className={styles.logout}>
+      {/* NOVO: Adicione o evento onClick aqui */}
+      <div className={styles.logout} onClick={onLogoutClick}>
         <FaSignOutAlt />
         <span>Log out</span>
       </div>
