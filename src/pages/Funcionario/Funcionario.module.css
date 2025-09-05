@@ -10,6 +10,7 @@
   }
   
   .cadastrarBtn {
+    font-family: "OneBusFont", sans-serif;
     background-color: var(--secondary-purple);
     color: var(--white);
     border: none;

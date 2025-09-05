@@ -5,7 +5,7 @@
   height: 100vh;
   width: 100vw;
   overflow: hidden;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+ font-family: "OneBusFont", sans-serif;
 
   /* 1. A MUDANÇA PRINCIPAL ESTÁ AQUI */
   /* Usamos um gradiente linear que vai de azul até 50% da altura,
@@ -21,6 +21,7 @@
   align-items: center;
   flex-direction: column;
   position: relative;
+  font-family: "OneBusFont", sans-serif;
 }
 
 /* 3. Removemos o pseudo-elemento '::before' que criava a faixa branca antes */

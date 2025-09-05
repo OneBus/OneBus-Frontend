@@ -23,7 +23,6 @@ function Sidebar({ isOpen, onLogoutClick}) {
 return (
     <div className={sidebarClass}>
       <div className={styles.logo}>
-        <FaBus size={30} />
         <h1>OneBus</h1>
       </div>
       <nav className={styles.nav}>

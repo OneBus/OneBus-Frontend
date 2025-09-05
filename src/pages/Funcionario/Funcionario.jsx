@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styles from './Funcionario.module.css';
 import { FaEdit, FaTrash } from 'react-icons/fa';
-import Modal from '../../components/Modal/Modal';
+import { useNavigate } from 'react-router-dom';
+
 
 const funcionariosData = [
   { name: 'Eduardo Moises', cargo: 'CEO', codigo: '21649'},
@@ -12,16 +13,23 @@ const funcionariosData = [
 ];
 
 function Funcionario() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+
+   const navigate = useNavigate(); // 2. Inicialize o hook
+
+  // 3. Função que será chamada pelo botão
+  const handleCadastrarClick = () => {
+    navigate('/funcionarios/cadastrar'); // Navega para a nova rota
+  };
+
 
   return (
     <div className={styles.container}>
       <div className={styles.actions}>
             <div className={styles.title}>
                 <h1>Funcionários</h1>
-              </div>
+            </div>
 
-        <button className={styles.cadastrarBtn} onClick={() => setIsModalOpen(true)}>
+        <button className={styles.cadastrarBtn} onClick={handleCadastrarClick}>
           Cadastrar Funcionário
         </button>
       </div>
@@ -55,31 +63,10 @@ function Funcionario() {
           </tbody>
         </table>
       </div>
+</div>
+      );
+      }
+  
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <div className={styles.modalContent}>
-          <h2>Cadastrar Novo Funcionário</h2>
-          {/*Nome*/}
-          <div className={styles.formGroup}>
-            <label htmlFor="nome">Nome</label>
-            <input type="text" id="nome" />
-          </div>
-          {/*cargo*/}
-          <div className={styles.formGroup}>
-            <label htmlFor="cargo">Cargo</label>
-            <input type="text" id="cargo" />
-          </div>
-          {/*codigo*/}
-          <div className={styles.formGroup}>
-            <label htmlFor="codigo">Código</label>
-            <input type="text" id="codigo" />
-          </div>
-      {/*btn cadastrar*/}
-          <button className={styles.cadastrarBtn}>Cadastrar</button>
-        </div>
-      </Modal>
-    </div>
-  );
-}
 
 export default Funcionario;

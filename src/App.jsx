@@ -39,7 +39,7 @@ const DashboardLayout = () => {
         <AppRoutes />
       </div>
 
-      {/* NOVO: Modal de confirmação de logout */}
+      {/* Modal de confirmação de logout */}
       <Modal isOpen={isLogoutModalOpen} onClose={() => setLogoutModalOpen(false)}>
         <div className="logout-modal-content">
           <h3>Saindo do Sistema</h3>

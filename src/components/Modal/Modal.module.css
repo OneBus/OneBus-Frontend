@@ -1,4 +1,5 @@
 .overlay {
+  font-family: "OneBusFont", sans-serif;
     position: fixed;
     top: 0;
     left: 0;
@@ -12,6 +13,7 @@
   }
   
   .modal {
+    font-family: "OneBusFont", sans-serif;
     background-color: var(--white);
     padding: 2rem;
     border-radius: 8px;
@@ -21,6 +23,7 @@
   }
   
   .closeButton {
+    font-family: "OneBusFont", sans-serif;
     position: absolute;
     top: 1rem;
     right: 1rem;
