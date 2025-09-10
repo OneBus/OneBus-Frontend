@@ -1,11 +1,12 @@
+//importações
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Login.module.css';
-
-// CAMINHOS CORRIGIDOS AQUI
 import Modal from '../../components/Modal/Modal'; 
 import onebusLogo from '../../assets/onebus-logo.png';
 import api from '../../services/api'; 
+
+//componente principal
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -26,9 +27,27 @@ function Login() {
         password
       });
 
-      const { token } = response.data;
-      localStorage.setItem('authToken', token);
-      navigate('/'); 
+
+      //console.log('Resposta completa da API de Login:', response.data);
+// Ou o caminho correto que você descobrir
+      
+
+      //const { token } = response.data;
+      //localStorage.setItem('authToken', token);
+      //navigate('/'); 
+
+      //console.log('Token que será salvo:', token);
+
+
+      const token = response.data?.value?.token;
+
+      if (token) {
+        localStorage.setItem('authToken', token);
+        navigate('/'); // Redireciona para a página principal
+      } else {
+        // Isso se token não vier, retorna erro no usestate
+        setError('Token não foi encontrado na resposta do servidor.');
+      }
 
     } catch (err) {
       const errorMessage = err.response?.data?.message || 'Erro ao fazer login. Verifique suas credenciais.';
@@ -37,6 +56,8 @@ function Login() {
       setLoading(false);
     }
   };
+
+  // JSX do login,  required quando o campo não pode ser nulo
 
   return (
     <div className={styles.loginContainer}>

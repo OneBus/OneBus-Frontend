@@ -13,7 +13,6 @@ const menuItems = [
   { path: '/linha', name: 'Linha', icon: <FaRoute /> },
   { path: '/linha-horario', name: 'Linha Horário', icon:  <FaClock /> },
   { path: '/manutencao', name: 'Manutenção', icon: <FaWrench /> },
-  { path: '/usuarios', name: 'Usuários', icon: <FaUsers /> },
 ];
 
 function Sidebar({ isOpen, onLogoutClick}) {

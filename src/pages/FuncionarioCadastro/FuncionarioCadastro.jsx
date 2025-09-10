@@ -1,248 +1,315 @@
+//importações// 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './FuncionarioCadastro.module.css';
 import api from '../../services/api';
 import Modal from '../../components/Modal/Modal';
-
-// 1. Importe as novas funções
 import { validateCPF, maskCPF, maskPhone, getTodayDate } from '../../utils/validators';
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-const ALLOWED_FILE_TYPES = ['image/png', 'image/jpeg', 'image/jpg', 'image/heic'];
+const sizeFile = 5 * 1024 * 1024; // filtra arquivos ate 5MB
+const fileTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/heic']; //strings do tipo mime que armazenam o formato do arquivo
 
+// Componente principal
 
-
-function CadastrarFuncionario() {
+function FuncionarioCadastro() {
   const navigate = useNavigate();
-  
-  // Estados para cada um dos novos campos do formulário
-  const [formData, setFormData] = useState({
-    nome: '',
-    rg: '',
-    cpf: '',
-    tipoSanguineo: '',
-    codigo: '',
-    cargo: '',
-    email: '',
-    phone: '',
-    dataContratacao: '',
-    numeroCnh: '',
-    categoriaCnh: '',
-    vencimentoCnh: '',
-    status: '',
-    imagem: null,
-  });
 
+  // Nomes dos campos alinhados com a API (camelCase em inglês)
+  const [formData, setFormData] = useState({
+    name: '', rg: '', cpf: '', bloodType: '', code: '', role: '',
+    email: '', phone: '', hiringDate: '', cnhNumber: '',
+    cnhCategory: '', cnhExpiration: '', status: '', image: null,
+    password: '',
+  });
+  
+  //declara estados para cada enum(select) que será populado pela api
+  const [roleOptions, setRoleOptions] = useState([]);
+  const [statusOptions, setStatusOptions] = useState([]);
+  const [bloodTypeOptions, setBloodTypeOptions] = useState([]);
+  const [cnhCategoryOptions, setCnhCategoryOptions] = useState([]);
+
+//declara estados para validação do formulário erro, se todos os campos forma preenchidos, de carregamento e de modais
   const [errors, setErrors] = useState({});
   const [isFormValid, setIsFormValid] = useState(false);
-
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState({ isOpen: false, message: '', isError: false });
 
-  // Função para atualizar o estado do formulário de forma genérica
+
+  // Efeito para buscar as opções dos filtros (status, cargos, etc.)
+ useEffect(() => {
+    const fetchFilterOptions = async () => {
+      try {
+        const [rolesRes, statusRes, bloodTypesRes, cnhCategoriesRes] = await Promise.all([
+          api.get('/employees/roles'),
+          api.get('/employees/status'),
+          api.get('/employees/bloodTypes'),
+          api.get('/employees/cnhCategories'),
+        ]);
+        // Log para depuração final
+        console.log('Opções de Cargo recebidas:', rolesRes.data.value);
+        
+        setRoleOptions(rolesRes.data.value || []);
+        setStatusOptions(statusRes.data.value || []);
+        setBloodTypeOptions(bloodTypesRes.data.value || []);
+        setCnhCategoryOptions(cnhCategoriesRes.data.value || []);
+      } catch (err) {
+        console.error("Erro ao buscar opções de filtro:", err);
+        setFeedback({ isOpen: true, message: "Não foi possível carregar as opções do formulário.", isError: true });
+      }
+    };
+    fetchFilterOptions();
+  }, []);
+
+  //userEffect onde cada vez que formData ou errors mudam, ele valida o formulario
   useEffect(() => {
     const requiredFields = [
-      'nome', 'rg', 'cpf', 'tipoSanguineo', 'codigo', 'cargo',
-      'phone', 'numeroCnh', 'vencimentoCnh', 'status'
+      'name', 'rg', 'cpf', 'bloodType', 'code', 'role',
+      'phone', 'cnhNumber', 'cnhExpiration', 'status', 'email'
     ];
-    const allRequiredFilled = requiredFields.every(field => !!formData[field]);
+    const allRequiredFilled = requiredFields.every(field => formData[field] !== '');
     const noErrors = Object.keys(errors).length === 0;
     
     setIsFormValid(allRequiredFilled && noErrors);
   }, [formData, errors]);
 
-
-    const handleChange = (e) => {
+  //validação de rg, cpf, telefone e mascara de cpf e telefone
+   const handleChange = (e) => {
     const { name, value } = e.target;
+
+// Log para vermos o que está acontecendo
+    console.log(`--- CAMPO ALTERADO ---`);
+    console.log(`Nome do campo (name): ${name}`);
+    console.log(`Valor selecionado (value): ${value}`);
+    
+
     let finalValue = value;
 
-    if (name === 'cpf') {
-      finalValue = maskCPF(value);
-    } 
-    else if (name === 'phone') {
-      finalValue = maskPhone(value);
-    } 
+    if (name === 'cpf') finalValue = maskCPF(value);
+    else if (name === 'phone') finalValue = maskPhone(value);
     else if (name === 'rg') {
-      //  LÓGICA PARA O RG
       const upperValue = value.toUpperCase();
-      // Remove tudo que não for dígito, exceto se for um 'X' no final, tudo que não for igual a 0 a 9 e x
-      finalValue = upperValue.replace(/[^0-9X]/g, '').replace(/X(.)+/g, 'X');
-      // Limita o tamanho total a 9 caracteres
-      finalValue = finalValue.substring(0, 9);
+      finalValue = upperValue.replace(/[^0-9X]/g, '').replace(/X(.)+/g, 'X').substring(0, 9);
     }
     
     setFormData(prevState => ({ ...prevState, [name]: finalValue }));
 
     if (errors[name]) {
-      setErrors(prevErrors => {
-        const newErrors = { ...prevErrors };
-        delete newErrors[name];
-        return newErrors;
-      });
+      const newErrors = { ...errors };
+      delete newErrors[name];
+      setErrors(newErrors);
     }
   };
 
-  // 4. Validação ao sair do campo
+  // tratamentos específicos para CPF ao sair do campo, chama o metodo validateCPF
+
   const handleBlur = (e) => {
     const { name, value } = e.target;
     if (name === 'cpf' && value && !validateCPF(value)) {
       setErrors(prev => ({ ...prev, cpf: 'CPF inválido.' }));
     }
-    // Adicione outras validações onBlur aqui se necessário (ex: RG)
   };
 
+  //metodo para validação de tamanho e tipo do arquivo
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    if (!file) return;
-
-    if (!ALLOWED_FILE_TYPES.includes(file.type)) {
-      setErrors(prev => ({ ...prev, imagem: 'Tipo de arquivo inválido. Use PNG, JPG, JPEG ou HEIC.' }));
-      e.target.value = null; // Limpa o input
+   if (!file) {
+      setFormData(prevState => ({ ...prevState, image: null }));
       return;
     }
 
-    if (file.size > MAX_FILE_SIZE) {
-      setErrors(prev => ({ ...prev, imagem: 'O arquivo não pode exceder 5MB.' }));
-      e.target.value = null; // Limpa o input
+    if (!fileTypes.includes(file.type)) {
+      setErrors(prev => ({ ...prev, image: 'Tipo de arquivo inválido.' }));
+      return;
+    }
+    if (file.size > sizeFile) {
+      setErrors(prev => ({ ...prev, image: 'O arquivo excede 5MB.' }));
       return;
     }
 
-    setFormData(prevState => ({ ...prevState, imagem: file }));
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      const base64String = reader.result.split(',')[1];
+      setFormData(prevState => ({ ...prevState, image: base64String }));
+    };
+    reader.onerror = (error) => {
+      console.error("Erro ao ler o arquivo:", error);
+      setErrors(prev => ({ ...prev, image: 'Erro ao processar a imagem.' }));
+    };
   };
 
-  const handleSave = async (e) => {
+// PASSO 3: 
+    const handleSave = async (e) => {
     e.preventDefault();
-    if (!isFormValid) {
-        setFeedback({ isOpen: true, message: 'Por favor, preencha todos os campos obrigatórios e corrija os erros.', isError: true });
-        return;
-    }
-    setLoading(true);
 
-    // 5. Trata os dados antes de enviar
-    const cleanedData = {
-      ...formData,
+
+    //if (!isFormValid) {
+       // setFeedback({ isOpen: true, message: 'Preencha todos os campos obrigatórios.', isError: true });
+       // return;
+    //}
+    setLoading(true);
+    const payload = {
+      name: formData.name,
+      rg: formData.rg,
       cpf: formData.cpf.replace(/[^\d]/g, ''),
-      rg: formData.rg.replace(/[^\d]/g, ''),
+      bloodType: parseInt(formData.bloodType, 10),
+      code: formData.code,
+      role: parseInt(formData.role, 10),
+      email: formData.email,
       phone: formData.phone.replace(/[^\d]/g, ''),
+      hiringDate: formData.hiringDate || null,
+      cnhNumber: formData.cnhNumber,
+      cnhCategory: formData.cnhCategory ? parseInt(formData.cnhCategory, 10) : null,
+      cnhExpiration: formData.cnhExpiration,
+      status: parseInt(formData.status, 10),
+      image: formData.image,
+      // Removido o campo 'password' para alinhar com o teste do Swagger, adicione se for necessário
     };
 
-    const dataToSend = new FormData();
-    for (const key in cleanedData) {
-      dataToSend.append(key, cleanedData[key]);
-    }
-    
     try {
-      await api.post('/users', dataToSend);
+      await api.post('/employees', payload);
       setFeedback({ isOpen: true, message: 'Funcionário cadastrado com sucesso!', isError: false });
     } catch (err) {
-      const errorMessage = err.response?.data?.message || 'Erro ao cadastrar funcionário.';
-      setFeedback({ isOpen: true, message: errorMessage, isError: true });
+      const errorList = err.response?.data?.errors;
+      let detailedMessage = 'Erro ao cadastrar funcionário. Verifique os dados.';
+      if (errorList && Array.isArray(errorList) && errorList.length > 0) {
+        detailedMessage = errorList.map(item => item.message).join(' ');
+      }
+      setFeedback({ isOpen: true, message: detailedMessage, isError: true });
     } finally {
       setLoading(false);
     }
   };
-  
+    // Mapeia os dados do formulário para o formato PascalCase que a API espera
+   //onst employeeData = {
+     //ome: formData.name,
+    //  Rg: formData.rg,
+      //Cpf: formData.cpf.replace(/[^\d]/g, ''),
+     // TipoSanguineo: parseInt(formData.bloodType, 10),
+     // Matrícula: formData.code,
+     // Cargo: parseInt(formData.role, 10),
+     // Email: formData.email,
+    /// Telefone: formData.phone.replace(/[^\d]/g, ''),
+    //  DataContratacao: formData.hiringDate || null,
+    //  NumeroCnh: formData.cnhNumber,
+      //CategoriaCnh: formData.cnhCategory ? parseInt(formData.cnhCategory, 10) : null,
+     // DataVencimentoCnh: formData.cnhExpiration,
+     // Status: parseInt(formData.status, 10),
+     // Imagem: formData.image,
+     // Password: formData.password,
+    //};
+
+   // if (!employeeData.Email) delete employeeData.Email;
+    //if (!employeeData.DataContratacao) delete employeeData.DataContratacao;
+//
+   // try {
+     
+     // await api.post('/employees');
+    //  setFeedback({ isOpen: true, message: 'Funcionário cadastrado com sucesso!', isError: false });
+   // } catch (err) {
+    //  const errorMessages = err.response?.data?.errors;
+    //  let detailedMessage = 'Erro ao cadastrar funcionário.';
+      
+    //  if (errorMessages && Array.isArray(errorMessages)) {
+    //    detailedMessage = errorMessages[0].message;
+     // } else if (errorMessages) {
+    //    detailedMessage = Object.values(errorMessages)[0][0];
+     // }
+      
+    //  setFeedback({ isOpen: true, message: detailedMessage, isError: true });
+   // } finally {
+   //   setLoading(false);
+   // }
+//  };]
+
+
   const handleCloseModal = () => {
-    setFeedback({ ...feedback, isOpen: false });
+    setFeedback({ isOpen: false, message: '', isError: false });
     if (!feedback.isError) navigate('/funcionario');
   };
 
-
   return (
     <div className={styles.container}>
-      {/* ... Header ... */}
       <div className={styles.header}>
         <h1>Cadastrar Novo Funcionário</h1>
-        <button onClick={() => navigate('/funcionario')} className={styles.backButton}>
-          Voltar para a Lista
-        </button>
+        <button onClick={() => navigate('/funcionario')} className={styles.backButton}>Voltar</button>
       </div>
       
       <form className={styles.form} onSubmit={handleSave}>
         <div className={styles.formGrid}>
-          {/* Nome */}
           <div className={styles.inputGroup}>
-            <label htmlFor="nome">Nome <span className={styles.required}>*</span></label>
-            <input name="nome" type="text" value={formData.nome} onChange={handleChange} maxLength="100" required />
+            <label htmlFor="name">nome <span className={styles.required}>*</span></label>
+            <input name="name" type="text" value={formData.name} onChange={handleChange} maxLength="100" required />
           </div>
-          {/* RG */}
           <div className={styles.inputGroup}>
             <label htmlFor="rg">RG <span className={styles.required}>*</span></label>
             <input name="rg" type="text" value={formData.rg} onChange={handleChange} maxLength="9" required />
           </div>
-          {/* CPF */}
           <div className={styles.inputGroup}>
             <label htmlFor="cpf">CPF <span className={styles.required}>*</span></label>
             <input name="cpf" type="text" value={formData.cpf} onChange={handleChange} onBlur={handleBlur} required />
             {errors.cpf && <small className={styles.errorText}>{errors.cpf}</small>}
           </div>
-          {/* Tipo Sanguíneo */}
           <div className={styles.inputGroup}>
-            <label htmlFor="tipoSanguineo">Tipo Sanguíneo <span className={styles.required}>*</span></label>
-            <select name="tipoSanguineo" value={formData.tipoSanguineo} onChange={handleChange} required>
-              <option value="">Selecione...</option><option value="1">A+</option><option value="2">A-</option>
-              <option value="3">B+</option><option value="4">B-</option><option value="5">AB+</option>
-              <option value="6">AB-</option><option value="7">O+</option><option value="8">O-</option>
+  <label htmlFor="bloodType">Tipo Sanguíneo <span className={styles.required}>*</span></label>
+  <select name="bloodType" value={formData.bloodType} onChange={handleChange} required>
+    <option value="">Selecione...</option>
+    {/* Garanta que o 'value' aqui é opt.id */}
+    {bloodTypeOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.name}</option>)}
+  </select>
+</div>
+          <div className={styles.inputGroup}>
+            <label htmlFor="code">Matrícula (Código) <span className={styles.required}>*</span></label>
+            <input name="code" type="text" value={formData.code} onChange={handleChange} maxLength="10" required />
+          </div>
+   <div className={styles.inputGroup}>
+            <label htmlFor="role">Cargo <span className={styles.required}>*</span></label>
+            <select name="role" value={formData.role} onChange={handleChange} required>
+                <option value="">Selecione...</option>
+                {roleOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.name}</option>)}
             </select>
           </div>
-          {/* Código */}
+        <div className={styles.inputGroup}>
+  <label htmlFor="status">Status <span className={styles.required}>*</span></label>
+   <select name="status" value={formData.status} onChange={handleChange} required>
+      <option value="">Selecione...</option>
+      {/* Garanta que o 'value' aqui é opt.id */}
+      {statusOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.name}</option>)}
+  </select>
+</div>
           <div className={styles.inputGroup}>
-            <label htmlFor="codigo">Código <span className={styles.required}>*</span></label>
-            <input name="codigo" type="text" value={formData.codigo} onChange={handleChange} maxLength="10" required />
+            <label htmlFor="email">email <span className={styles.required}>*</span></label>
+            <input name="email" type="email" value={formData.email} onChange={handleChange} required />
           </div>
-          {/* Cargo */}
-          <div className={styles.inputGroup}>
-            <label htmlFor="cargo">Cargo <span className={styles.required}>*</span></label>
-            <select name="cargo" value={formData.cargo} onChange={handleChange} required>
-                <option value="">Selecione...</option><option value="1">Motorista</option><option value="2">Cobrador</option>
-                <option value="3">Manutenção</option><option value="4">Administrativo</option>
-            </select>
-          </div>
-          {/* Status */}
-          <div className={styles.inputGroup}>
-            <label htmlFor="status">Status <span className={styles.required}>*</span></label>
-             <select name="status" value={formData.status} onChange={handleChange} required>
-                <option value="">Selecione...</option><option value="1">Ativo</option><option value="0">Inativo</option>
-            </select>
-          </div>
-          {/* Email */}
-          <div className={styles.inputGroup}>
-            <label htmlFor="email">Email</label>
-            <input name="email" type="email" value={formData.email} onChange={handleChange} />
-          </div>
-          {/* Telefone */}
           <div className={styles.inputGroup}>
             <label htmlFor="phone">Telefone <span className={styles.required}>*</span></label>
             <input name="phone" type="text" value={formData.phone} onChange={handleChange} required />
           </div>
-          {/* Data da Contratação */}
           <div className={styles.inputGroup}>
-            <label htmlFor="dataContratacao">Data da Contratação</label>
-            <input name="dataContratacao" type="date" value={formData.dataContratacao} onChange={handleChange} />
+            <label htmlFor="hiringDate">Data da Contratação</label>
+            <input name="hiringDate" type="date" value={formData.hiringDate} onChange={handleChange} />
           </div>
-          {/* Número da CNH */}
           <div className={styles.inputGroup}>
-            <label htmlFor="numeroCnh">Número da CNH <span className={styles.required}>*</span></label>
-            <input name="numeroCnh" type="text" value={formData.numeroCnh} onChange={handleChange} maxLength="11" required />
+            <label htmlFor="cnhNumber">Número da CNH <span className={styles.required}>*</span></label>
+            <input name="cnhNumber" type="text" value={formData.cnhNumber} onChange={handleChange} maxLength="11" required />
           </div>
-           {/* Categoria CNH */}
+         <div className={styles.inputGroup}>
+  <label htmlFor="cnhCategory">Categoria CNH</label>
+   <select name="cnhCategory" value={formData.cnhCategory} onChange={handleChange}>
+      <option value="">Selecione...</option>
+      {/* Garanta que o 'value' aqui é opt.id */}
+      {cnhCategoryOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.name}</option>)}
+  </select>
+</div>
+        
           <div className={styles.inputGroup}>
-            <label htmlFor="categoriaCnh">Categoria CNH</label>
-             <select name="categoriaCnh" value={formData.categoriaCnh} onChange={handleChange}>
-                <option value="">Selecione...</option><option value="1">A</option><option value="2">B</option>
-                <option value="3">C</option><option value="4">D</option><option value="5">E</option>
-            </select>
+            <label htmlFor="cnhExpiration">Vencimento CNH <span className={styles.required}>*</span></label>
+            <input name="cnhExpiration" type="date" value={formData.cnhExpiration} onChange={handleChange} min={getTodayDate()} required />
           </div>
-          {/* Vencimento CNH */}
           <div className={styles.inputGroup}>
-            <label htmlFor="vencimentoCnh">Vencimento CNH <span className={styles.required}>*</span></label>
-            <input name="vencimentoCnh" type="date" value={formData.vencimentoCnh} onChange={handleChange} min={getTodayDate()} required />
-          </div>
-          {/* Imagem */}
-          <div className={styles.inputGroup}>
-            <label htmlFor="imagem">Imagem do Perfil</label>
-            <input name="imagem" type="file" onChange={handleFileChange} accept=".png, .jpg, .jpeg, .heic" />
-            {errors.imagem && <small className={styles.errorText}>{errors.imagem}</small>}
+            <label htmlFor="image">Imagem do Perfil</label>
+            <input name="image" type="file" onChange={handleFileChange} accept=".png, .jpg, .jpeg, .heic" />
+            {errors.image && <small className={styles.errorText}>{errors.image}</small>}
           </div>
         </div>
 
@@ -254,11 +321,14 @@ function CadastrarFuncionario() {
       </form>
 
       <Modal isOpen={feedback.isOpen} onClose={handleCloseModal}>
-        {/* ... (código do modal de feedback) ... */}
+        <div className="feedback-modal-content">
+          <h3>{feedback.isError ? 'Ocorreu um Erro' : 'Sucesso!'}</h3>
+          <p>{feedback.message}</p>
+          <button onClick={handleCloseModal} className="feedback-modal-button">Fechar</button>
+        </div>
       </Modal>
     </div>
   );
 }
 
-export default CadastrarFuncionario;
-
+export default FuncionarioCadastro;

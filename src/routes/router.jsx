@@ -2,6 +2,7 @@ import React from 'react';
 import { Routes, Route } from "react-router-dom";
 import Funcionario from "../pages/Funcionario/Funcionario";
 import FuncionarioCadastro from '../pages/FuncionarioCadastro/FuncionarioCadastro';
+import FuncionarioEdicao from '../pages/FuncionarioEdicao/FuncionarioEdicao';
 const Placeholder = ({ title }) => (
     <div style={{ padding: '10rem' }}>
       <h1>{title}</h1>
@@ -15,6 +16,7 @@ const AppRoutes = () => {
             
             <Route path="/funcionario" element={<Funcionario />} />
             <Route path="/funcionarios/cadastrar" element={<FuncionarioCadastro />} />
+             <Route path="/funcionarios/editar/:id" element={<FuncionarioEdicao />} />
             <Route path="/funcionario-horario" element={<Placeholder title="Tela de Funcionário Horário" />} />
             <Route path="/veiculo" element={<Placeholder title="Tela de Veículo" />} />
             <Route path="/veiculo-operacao" element={<Placeholder title="Tela de Veículo Operação" />} />
