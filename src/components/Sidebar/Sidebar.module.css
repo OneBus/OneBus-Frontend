@@ -1,6 +1,17 @@
+/* Variáveis de cor (se não estiverem em um arquivo global, adicione-as aqui ou em ':root') */
+:root {
+  --sidebar-bg: #1e1e2d; /* Cor de fundo escura */
+  --text-light: #e0e0e0;
+  --text-muted: #888;
+  --primary-blue: #007bff; /* Ou a cor azul da sua marca */
+  --secondary-purple: #6a0dad; /* Ou a cor roxa da sua marca */
+  --white: #fff;
+  --dark-gray: #333; /* Para elementos específicos */
+  --light-purple: #9c27b0; /* Cor para o badge */
+}
+
 .sidebar {
-  font-family: "OneBusFont", sans-serif;
-  width: 250px;
+  width: 80px;
   height: 100vh;
   background-color: var(--sidebar-bg);
   color: var(--text-light);
@@ -10,70 +21,128 @@
   left: 0;
   top: 0;
   z-index: 20;
-  /* 1. Oculta a sidebar fora da tela por padrão */
-  transform: translateX(-100%);
-  /* 2. Adiciona a transição suave */
-  transition: transform 0.3s ease-in-out;
+  transition: width 0.3s ease-in-out;
+ 
 }
 
-/* 3. Nova classe que traz a sidebar para a tela */
-.sidebar.open {
-  transform: translateX(0);
+.sidebar.expanded {
+  width: 250px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 1rem;
+  min-height: 70px;
+  position: relative;
 }
 
 .logo {
-  font-family: "OneBusFont", sans-serif;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1.5rem;
   font-size: 1.5rem;
   font-weight: bold;
   color: var(--primary-blue);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+  overflow: hidden; 
+}
+.sidebar.expanded .logo {
+  opacity: 1;
+}
+
+.hamburgerButton {
+  background: none;
+  border: none;
+  color: var(--text-light);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  position: absolute;
+  top: 18px;
+  right: 18px;
 }
 
 .nav {
-  font-family: "OneBusFont", sans-serif;
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  padding: 0 1rem;
+  padding: 0 1.25rem;
 }
 
 .navLink {
-  font-family: "OneBusFont", sans-serif;
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1.5rem;
   padding: 1rem;
   text-decoration: none;
   color: var(--text-muted);
   border-radius: 8px;
   transition: background-color 0.2s, color 0.2s;
+  white-space: nowrap;
+  position: relative; /* Necessário para o tooltip */
+   overflow: hidden;
 }
 
 .navLink:hover {
-  font-family: "OneBusFont", sans-serif;
   background-color: rgba(255, 255, 255, 0.05);
   color: var(--text-light);
 }
 
 .navLink.active {
-  font-family: "OneBusFont", sans-serif;
   background-color: var(--primary-blue);
   color: var(--white);
 }
 
+/* 4. A LÓGICA DO TOOLTIP ESTÁ AQUI */
+.sidebar:not(.expanded) .navLink:hover::after {
+  content: attr(title); /* Pega o texto do atributo 'title' do JSX */
+  position: absolute;
+  left: calc(80px + 10px); /* Posição à direita da sidebar recolhida */
+  background-color: #333333;
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 5px;
+  white-space: nowrap;
+  z-index: 100;
+  font-size: 0.9rem;
+  font-family: inherit;
+}
+
+.linkName {
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+.sidebar.expanded .linkName {
+  opacity: 1;
+}
+
+.navLink svg {
+  font-size: 1.5rem;
+  min-width: 24px;
+  text-align: center;
+}
+
 .logout {
-  font-family: "OneBusFont", sans-serif;
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 1.5rem;
-  margin: 1rem;
-  background-color: var(--secondary-purple);
+  gap: 1.5rem;
+  padding: 1rem;
+  margin: 1.5rem 1.25rem;
+  background-color: var(--primary-blue);
   color: var(--white);
   border-radius: 8px;
-  text-align: center;
   cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+   overflow: hidden;
+}
+
+.logout:hover {
+  background-color: #005f8b;
+}
+
+.logout svg {
+  font-size: 1.5rem;
+  min-width: 24px;
 }

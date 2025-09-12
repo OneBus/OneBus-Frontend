@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import styles from './Sidebar.module.css';
 import {
-  FaUser, FaClock, FaBus, FaRoute, FaWrench, FaUsers, FaSignOutAlt, FaChartLine
+  FaUser, FaClock, FaBus, FaRoute, FaWrench, FaSignOutAlt, FaBars
 } from 'react-icons/fa';
 
 const menuItems = [
@@ -15,15 +15,21 @@ const menuItems = [
   { path: '/manutencao', name: 'Manutenção', icon: <FaWrench /> },
 ];
 
-function Sidebar({ isOpen, onLogoutClick}) {
-  // 2. Crie a classe dinâmica baseada no estado 'isOpen'
-  const sidebarClass = `${styles.sidebar} ${isOpen ? styles.open : ''}`;
-
-return (
-    <div className={sidebarClass}>
-      <div className={styles.logo}>
-        <h1>OneBus</h1>
+// 2. RECEBEMOS A PROP 'onToggle' AQUI
+function Sidebar({ isOpen, onToggle, onLogoutClick }) {
+  return (
+    // A classe 'expanded' é controlada pela prop 'isOpen'
+    <div className={`${styles.sidebar} ${isOpen ? styles.expanded : ''}`}>
+      <div className={styles.header}>
+        <div className={styles.logo}>
+          <h1>OneBus</h1>
+        </div>
+        {/* 3. A FUNÇÃO 'onToggle' É USADA AQUI NO ONCLICK */}
+        <button className={styles.hamburgerButton} onClick={onToggle}>
+          <FaBars />
+        </button>
       </div>
+
       <nav className={styles.nav}>
         {menuItems.map((item) => (
           <NavLink
@@ -32,16 +38,17 @@ return (
             className={({ isActive }) =>
               isActive ? `${styles.navLink} ${styles.active}` : styles.navLink
             }
+            title={item.name} // O atributo 'title' é crucial para o tooltip
           >
             {item.icon}
-            <span>{item.name}</span>
+            <span className={styles.linkName}>{item.name}</span>
           </NavLink>
         ))}
       </nav>
-      {/* NOVO: Adicione o evento onClick aqui */}
+      
       <div className={styles.logout} onClick={onLogoutClick}>
         <FaSignOutAlt />
-        <span>Log out</span>
+        <span className={styles.linkName}>Log out</span>
       </div>
     </div>
   );

@@ -41,6 +41,7 @@
 .title h1 {
   font-size: 1.5rem;
   margin-right: 276px;
+  align-content: center;
    /* Garante que não há margem extra */
 }
 

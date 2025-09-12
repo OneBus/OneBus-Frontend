@@ -30,11 +30,11 @@ const DashboardLayout = () => {
   };
 
   return (
-    <div style={{ display: 'flex' }}>
-      {/* NOVO: Passamos a função 'promptLogout' para a Sidebar */}
-      <Sidebar isOpen={isSidebarOpen} onLogoutClick={promptLogout} />
+     <div style={{ display: 'flex' }}>
+      {/* 1. PASSAMOS O ESTADO 'isOpen' E A FUNÇÃO 'onToggle' PARA A SIDEBAR */}
+      <Sidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} onLogoutClick={promptLogout} />
       
-      <div style={{ flex: 1, marginLeft: isSidebarOpen ? '250px' : '0', transition: 'margin-left 0.3s ease-in-out' }}>
+      <div style={{ flex: 1, marginLeft: isSidebarOpen ? '250px' : '80px', transition: 'margin-left 0.3s ease-in-out' }}>
         <Header onToggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
         <AppRoutes />
       </div>
