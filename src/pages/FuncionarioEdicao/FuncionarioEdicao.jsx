@@ -35,9 +35,26 @@ function FuncionarioEdicao() {
         setBloodTypeOptions(bloodTypesRes.data.value || []);
         setCnhCategoryOptions(cnhCategoriesRes.data.value || []);
         
-        const employeeData = employeeRes.data.value;
-        if (employeeData.hiringDate) employeeData.hiringDate = employeeData.hiringDate.split('T')[0];
-        if (employeeData.cnhExpiration) employeeData.cnhExpiration = employeeData.cnhExpiration.split('T')[0];
+
+
+
+     let employeeData = employeeRes.data.value;
+        
+        // ▼▼▼ CORREÇÃO APLICADA AQUI ▼▼▼
+        // Garantimos que todos os IDs dos selects sejam strings para o formulário
+        employeeData = {
+          ...employeeData,
+          status: employeeData.status.toString(),
+          role: employeeData.role.toString(),
+          bloodType: employeeData.bloodType.toString(),
+          cnhCategory: employeeData.cnhCategory ? employeeData.cnhCategory.toString() : '',
+          hiringDate: employeeData.hiringDate ? employeeData.hiringDate.split('T')[0] : '',
+          cnhExpiration: employeeData.cnhExpiration ? employeeData.cnhExpiration.split('T')[0] : '',
+        }
+
+        //const employeeData = employeeRes.data.value;
+      //  if (employeeData.hiringDate) employeeData.hiringDate = employeeData.hiringDate.split('T')[0];
+       // if (employeeData.cnhExpiration) employeeData.cnhExpiration = employeeData.cnhExpiration.split('T')[0];
         setFormData(employeeData);
 
       } catch (error) {

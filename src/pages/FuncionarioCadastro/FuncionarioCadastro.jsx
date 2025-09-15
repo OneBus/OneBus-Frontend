@@ -64,8 +64,29 @@ function FuncionarioCadastro() {
   useEffect(() => {
     const requiredFields = [
       'name', 'rg', 'cpf', 'bloodType', 'code', 'role',
-      'phone', 'cnhNumber', 'cnhExpiration', 'status', 'email'
+      'phone', 'status', 'email'
     ];
+
+
+
+ // 2. Verifica se a CNH é obrigatória
+    // IMPORTANTE: Confirme se os IDs para Fiscal e Supervisor são '0' e '1' na sua API.
+    const roleId = formData.role;
+    const isCnhRequired = !['0', '1'].includes(roleId);
+
+    // 3. Adiciona campos de CNH se necessário
+    if (isCnhRequired) {
+      requiredFields.push('cnhNumber', 'cnhCategory', 'cnhExpiration');
+    }
+
+
+
+
+
+
+
+
+
     const allRequiredFilled = requiredFields.every(field => formData[field] !== '');
     const noErrors = Object.keys(errors).length === 0;
     
@@ -143,10 +164,10 @@ function FuncionarioCadastro() {
     e.preventDefault();
 
 
-    //if (!isFormValid) {
-       // setFeedback({ isOpen: true, message: 'Preencha todos os campos obrigatórios.', isError: true });
-       // return;
-    //}
+    if (!isFormValid) {
+       setFeedback({ isOpen: true, message: 'Preencha todos os campos obrigatórios.', isError: true });
+        return;
+    }
     setLoading(true);
     const payload = {
       name: formData.name,
@@ -228,6 +249,10 @@ function FuncionarioCadastro() {
     if (!feedback.isError) navigate('/funcionario');
   };
 
+
+
+  //button salvar
+  //disabled={!isFormValid || loading}
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -238,7 +263,7 @@ function FuncionarioCadastro() {
       <form className={styles.form} onSubmit={handleSave}>
         <div className={styles.formGrid}>
           <div className={styles.inputGroup}>
-            <label htmlFor="name">nome <span className={styles.required}>*</span></label>
+            <label htmlFor="name">Nome <span className={styles.required}>*</span></label>
             <input name="name" type="text" value={formData.name} onChange={handleChange} maxLength="100" required />
           </div>
           <div className={styles.inputGroup}>
@@ -253,8 +278,9 @@ function FuncionarioCadastro() {
           <div className={styles.inputGroup}>
   <label htmlFor="bloodType">Tipo Sanguíneo <span className={styles.required}>*</span></label>
   <select name="bloodType" value={formData.bloodType} onChange={handleChange} required>
+
     <option value="">Selecione...</option>
-    {/* Garanta que o 'value' aqui é opt.id */}
+    
     {bloodTypeOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.name}</option>)}
   </select>
 </div>
@@ -265,15 +291,18 @@ function FuncionarioCadastro() {
    <div className={styles.inputGroup}>
             <label htmlFor="role">Cargo <span className={styles.required}>*</span></label>
             <select name="role" value={formData.role} onChange={handleChange} required>
+
                 <option value="">Selecione...</option>
+
                 {roleOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.name}</option>)}
             </select>
           </div>
         <div className={styles.inputGroup}>
   <label htmlFor="status">Status <span className={styles.required}>*</span></label>
    <select name="status" value={formData.status} onChange={handleChange} required>
+
       <option value="">Selecione...</option>
-      {/* Garanta que o 'value' aqui é opt.id */}
+   
       {statusOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.name}</option>)}
   </select>
 </div>
@@ -287,7 +316,7 @@ function FuncionarioCadastro() {
           </div>
           <div className={styles.inputGroup}>
             <label htmlFor="hiringDate">Data da Contratação</label>
-            <input name="hiringDate" type="date" value={formData.hiringDate} onChange={handleChange} />
+            <input name="hiringDate" type="date" value={formData.hiringDate} onChange={handleChange} max={getTodayDate()}  />
           </div>
           <div className={styles.inputGroup}>
             <label htmlFor="cnhNumber">Número da CNH <span className={styles.required}>*</span></label>
@@ -314,7 +343,7 @@ function FuncionarioCadastro() {
         </div>
 
         <div className={styles.actions}>
-          <button type="submit" className={styles.saveButton} disabled={!isFormValid || loading}>
+          <button type="submit" className={styles.saveButton} >
             {loading ? 'Salvando...' : 'Salvar Funcionário'}
           </button>
         </div>

@@ -139,13 +139,15 @@ function Funcionario() {
           <input name="value" type="text" placeholder="Pesquisar..." value={filters.value} onChange={handleFilterChange} className={styles.searchInput}/>
         </div>
         <select name="role" value={filters.role} onChange={handleFilterChange} className={styles.filterSelect}>
-          <option value="">Todos os Cargos</option>
-          {roleOptions.map(option => <option key={option.id} value={option.id}>{option.name}</option>)}
-        </select>
+       <option value="">Todos os Cargos</option>
+  {/* CORRIGIDO: Usando opt.value para a key e para o value */}
+  {roleOptions.map(option => <option key={option.value} value={option.value}>{option.name}</option>)}
+</select>
         <select name="status" value={filters.status} onChange={handleFilterChange} className={styles.filterSelect}>
-          <option value="">Todos os Status</option>
-          {statusOptions.map(option => <option key={option.id} value={option.id}>{option.name}</option>)}
-        </select>
+         
+          <option value="">Todos os Status</option> {/* CORRIGIDO: Usando opt.value para a key e para o value */}
+  {statusOptions.map(option => <option key={option.value} value={option.value}>{option.name}</option>)}
+</select>
       </div>
 
       <div className={styles.tableContainer}>
