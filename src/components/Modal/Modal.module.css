@@ -15,7 +15,7 @@
   .modal {
     font-family: "OneBusFont", sans-serif;
     background-color: var(--white);
-    padding: 2rem;
+    padding: 1.5rem;
     border-radius: 8px;
     width: 400px;
     max-width: 90%;
@@ -32,3 +32,5 @@
     font-size: 1.5rem;
     color: var(--text-muted);
   }
+
+  

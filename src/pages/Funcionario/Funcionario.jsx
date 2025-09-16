@@ -4,6 +4,7 @@ import styles from './Funcionario.module.css';
 import { FaEdit, FaTrash, FaSearch } from 'react-icons/fa';
 import api from '../../services/api';
 import Modal from '../../components/Modal/Modal';
+import { generatePageNumbers } from '../../utils/pagination';
 
 // Hook de Debounce
 const useDebounce = (value, delay) => {
@@ -124,6 +125,15 @@ function Funcionario() {
     }
   };
 
+const handlePageSizeChange = (e) => {
+  const newSize = parseInt(e.target.value, 10);
+  setPagination({
+    ...pagination,
+    pageSize: newSize,
+    currentPage: 0, // Sempre volta para a primeira página ao mudar o tamanho
+  });
+};
+
   return (
     <div className={styles.container}>
       <div className={styles.headerBar}>
@@ -133,13 +143,15 @@ function Funcionario() {
         </button>
       </div>
       
-      <div className={styles.filterBar}>
+      <div className={styles.filterBar}> 
         <div className={styles.searchContainer}>
           <FaSearch className={styles.searchIcon} />
           <input name="value" type="text" placeholder="Pesquisar..." value={filters.value} onChange={handleFilterChange} className={styles.searchInput}/>
         </div>
         <select name="role" value={filters.role} onChange={handleFilterChange} className={styles.filterSelect}>
        <option value="">Todos os Cargos</option>
+
+    
   {/* CORRIGIDO: Usando opt.value para a key e para o value */}
   {roleOptions.map(option => <option key={option.value} value={option.value}>{option.name}</option>)}
 </select>
@@ -148,7 +160,28 @@ function Funcionario() {
           <option value="">Todos os Status</option> {/* CORRIGIDO: Usando opt.value para a key e para o value */}
   {statusOptions.map(option => <option key={option.value} value={option.value}>{option.name}</option>)}
 </select>
+
+
+
+<select 
+    name="pageSize" 
+    value={pagination.pageSize} 
+    onChange={handlePageSizeChange} 
+    className={styles.filterSelect}
+  >
+      <option value="2">2 por página</option>
+    <option value="5">5 por página</option>
+    <option value="10">10 por página</option>
+    <option value="15">15 por página</option>
+    <option value="20">20 por página</option>
+  </select>
       </div>
+
+
+  {/* ... searchContainer e os outros selects ... */}
+
+
+
 
       <div className={styles.tableContainer}>
         {loading ? ( <p className={styles.message}>Carregando...</p> ) : error ? ( <p className={styles.messageError}>{error}</p> ) : (
@@ -190,22 +223,45 @@ function Funcionario() {
               </tbody>
             </table>
             
-            {pagination.totalPages > 1 && (
-              <div className={styles.pagination}>
-                <button onClick={() => handlePageChange(pagination.currentPage - 1)} disabled={pagination.currentPage === 0}>
-                  Anterior
-                </button>
-                <span>
-                  Página {pagination.currentPage + 1} de {pagination.totalPages}
-                </span>
-                <button onClick={() => handlePageChange(pagination.currentPage + 1)} disabled={pagination.currentPage + 1 >= pagination.totalPages}>
-                  Próximo
-                </button>
-              </div>
-            )}
+          
+            
           </>
         )}
       </div>
+
+
+ {/* PAGINAÇÃO MOVIDA PARA FORA E PARA BAIXO DO tableContainer */}
+      {!loading && !error && pagination.totalPages > 0 && (
+        <div className={styles.pagination}>
+          <button 
+            onClick={() => handlePageChange(pagination.currentPage - 1)} 
+            disabled={!pagination.hasPreviousPage}
+            className={styles.pageButton}
+          >
+            &lt; Anterior
+          </button>
+
+          <div className={styles.pageNumbers}>
+            {generatePageNumbers(pagination.currentPage, pagination.totalPages).map(pageNumber => (
+              <button
+                key={pageNumber}
+                onClick={() => handlePageChange(pageNumber)}
+                className={`${styles.pageButton} ${pagination.currentPage === pageNumber ? styles.activePage : ''}`}
+              >
+                {pageNumber + 1}
+              </button>
+            ))}
+          </div>
+
+    <button 
+      onClick={() => handlePageChange(pagination.currentPage + 1)} 
+      disabled={!pagination.hasNextPage}
+      className={styles.pageButton}
+    >
+      Próximo &gt;
+    </button>
+  </div>
+)}
 
       <Modal isOpen={!!employeeToDelete} onClose={() => setEmployeeToDelete(null)}>
         <div className="logout-modal-content">

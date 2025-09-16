@@ -34,8 +34,10 @@ const DashboardLayout = () => {
       {/* 1. PASSAMOS O ESTADO 'isOpen' E A FUNÇÃO 'onToggle' PARA A SIDEBAR */}
       <Sidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} onLogoutClick={promptLogout} />
       
+
+      <Header onToggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
+        
       <div style={{ flex: 1, marginLeft: isSidebarOpen ? '250px' : '80px', transition: 'margin-left 0.3s ease-in-out' }}>
-        <Header onToggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
         <AppRoutes />
       </div>
 

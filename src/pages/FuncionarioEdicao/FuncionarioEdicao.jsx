@@ -117,7 +117,7 @@ function FuncionarioEdicao() {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1>Editar Funcionário: {formData.name}</h1>
+        <h1>Editar Funcionário de Nome {formData.name}</h1>
         <button onClick={() => navigate('/funcionario')} className={styles.backButton}>
           Voltar para a Lista
         </button>
@@ -203,11 +203,15 @@ function FuncionarioEdicao() {
         </div>
       </form>
 
-      <Modal isOpen={feedback.isOpen} onClose={handleCloseModal}>
+      <Modal isOpen={feedback.isOpen} onClose={handleCloseModal} showCloseButton={false} >
         <div className="feedback-modal-content">
           <h3>{feedback.isError ? 'Ocorreu um Erro' : 'Sucesso!'}</h3>
           <p>{feedback.message}</p>
-          <button onClick={handleCloseModal} className="feedback-modal-button">Fechar</button>
+
+       <div className="logout-modal-buttons">
+           
+          <button onClick={handleCloseModal} className="btn-primary">Fechar</button>
+        </div>
         </div>
       </Modal>
     </div>

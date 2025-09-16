@@ -84,3 +84,14 @@
 .logout-modal-buttons .btn-confirm:hover {
   background-color: #dc2626;
 }
+
+.logout-modal-buttons .btn-primary {
+  background-color: var(--primary-blue);
+  color: var(--white);
+  margin-top: 0.6rem;
+  margin-left: -16.0rem;
+}
+
+.logout-modal-buttons .btn-primary:hover {
+  background-color: #0082b3; /* Tom de azul mais escuro */
+}
