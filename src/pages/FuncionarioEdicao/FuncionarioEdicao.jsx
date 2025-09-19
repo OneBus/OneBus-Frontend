@@ -205,7 +205,7 @@ function FuncionarioEdicao() {
 
       <Modal isOpen={feedback.isOpen} onClose={handleCloseModal} showCloseButton={false} >
         <div className="feedback-modal-content">
-          <h3>{feedback.isError ? 'Ocorreu um Erro' : 'Sucesso!'}</h3>
+          <h3>{feedback.isError ? 'Aconteceu um Erro' : 'Sucesso!'}</h3>
           <p>{feedback.message}</p>
 
        <div className="logout-modal-buttons">

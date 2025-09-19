@@ -38,13 +38,14 @@
 }
 
 .logo {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   font-weight: bold;
   color: var(--primary-blue);
   white-space: nowrap;
   opacity: 0;
-  transition: opacity 0.2s ease-in-out;
+  transition: opacity 0.3s ease-in-out;
   overflow: hidden; 
+ 
 }
 .sidebar.expanded .logo {
   opacity: 1;
@@ -58,8 +59,8 @@
   cursor: pointer;
   padding: 0.5rem;
   position: absolute;
-  top: 18px;
-  right: 18px;
+  top: 24px;
+  right: 25px;
 }
 
 .nav {
@@ -76,8 +77,8 @@
   padding: 1rem;
   text-decoration: none;
   color: var(--text-muted);
-  border-radius: 8px;
-  transition: background-color 0.2s, color 0.2s;
+  border-radius: 13px;
+  transition: background-color 0.3s, color 0.4s;
   white-space: nowrap;
   position: relative; /* Necessário para o tooltip */
    overflow: hidden;
@@ -101,7 +102,6 @@
   background-color: #333333;
   color: white;
   padding: 0.5rem 0.75rem;
-  border-radius: 5px;
   white-space: nowrap;
   z-index: 100;
   font-size: 0.9rem;
@@ -110,7 +110,7 @@
 
 .linkName {
   opacity: 0;
-  transition: opacity 0.2s ease-in-out;
+  transition: opacity 0s ease-in-out;
 }
 .sidebar.expanded .linkName {
   opacity: 1;
@@ -130,10 +130,10 @@
   margin: 1.5rem 1.25rem;
   background-color: var(--primary-blue);
   color: var(--white);
-  border-radius: 8px;
+  border-radius: 13px;
   cursor: pointer;
   white-space: nowrap;
-  transition: background-color 0.2s;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+  transition: background-color 0s;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
    overflow: hidden;
 }
 

@@ -5,8 +5,11 @@
   font-style: normal;
 }
 
-:root {
+:root { /* atribuindo cores a variaveis*/
     --primary-blue: #00a0dc;
+    --maya-blue: #78C5EF;
+    --carolina-blue: #51A0D5;
+    --yim-blue: #2C528C;
     --secondary-purple: #9556d7;
     --tertiary-green: #28a745; /* Um verde complementar */
   
@@ -66,23 +69,26 @@
   cursor: pointer;
   transition: background-color 0.2s;
 }
-
+/*botao de cancelar do modal deletar da tela funcionario.jsx */
 .logout-modal-buttons .btn-cancel {
   background-color: #e2e8f0; /* Cinza claro */
-  color: var(--text-dark);
+  color: var(--primary-blue);
 }
 
 .logout-modal-buttons .btn-cancel:hover {
-  background-color: #cbd5e1;
+  background-color: var(--primary-blue);
+  color:  #e2e8f0;
 }
 
+/*botão  de excluir do modal deletar da tela funcionario.jsx */
 .logout-modal-buttons .btn-confirm {
-  background-color: #ef4444; /* Vermelho para ação destrutiva */
-  color: white;
+  background-color: #e2e8f0; /* Vermelho para ação destrutiva */
+  color: #ef4444;
 }
 
 .logout-modal-buttons .btn-confirm:hover {
   background-color: #dc2626;
+  color:#e2e8f0 ;
 }
 
 .logout-modal-buttons .btn-primary {
@@ -94,4 +100,38 @@
 
 .logout-modal-buttons .btn-primary:hover {
   background-color: #0082b3; /* Tom de azul mais escuro */
+}
+
+
+/*modal da pagina de ediatar funcionaro e horario*/
+.feedback-modal-content {
+  text-align: center;
+  padding: 1rem;
+}
+
+.feedback-modal-content h3 {
+  margin-bottom: 1rem;
+  color: var(--text-dark);
+}
+
+.feedback-modal-content p {
+  margin-bottom: 1.5rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.feedback-modal-button {
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: 15px;
+  background-color: var(--border-color); /* Botão azul padrão */
+  color: var(--primary-blue);
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.feedback-modal-button:hover {
+  background-color: var(--primary-blue); 
+  color: var(--border-color);/* Azul mais escuro */
 }

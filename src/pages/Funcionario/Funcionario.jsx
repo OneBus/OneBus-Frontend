@@ -76,11 +76,12 @@ function Funcionario() {
         Value: debouncedSearchTerm || null,
         Status: filters.status || null,
         Role: filters.role || null,
+     
       };
 
       const response = await api.get('/employees', { params });
       
-      const { items, totalPages } = response.data.value;
+      const { items, totalPages} = response.data.value;
       setFuncionarios(items);
       setPagination(prev => ({ ...prev, totalPages }));
 
@@ -169,7 +170,7 @@ const handlePageSizeChange = (e) => {
     onChange={handlePageSizeChange} 
     className={styles.filterSelect}
   >
-      <option value="2">2 por página</option>
+    <option value="2">2 por página</option>
     <option value="5">5 por página</option>
     <option value="10">10 por página</option>
     <option value="15">15 por página</option>
@@ -255,7 +256,7 @@ const handlePageSizeChange = (e) => {
 
     <button 
       onClick={() => handlePageChange(pagination.currentPage + 1)} 
-      disabled={!pagination.hasNextPage}
+     
       className={styles.pageButton}
     >
       Próximo &gt;
@@ -265,7 +266,7 @@ const handlePageSizeChange = (e) => {
 
       <Modal isOpen={!!employeeToDelete} onClose={() => setEmployeeToDelete(null)}>
         <div className="logout-modal-content">
-          <h3>Confirmar Exclusão</h3>
+          <h3>Confirmação de Exclusão</h3>
           <p>Tem certeza que deseja excluir o funcionário <strong>{employeeToDelete?.name}</strong>?</p>
           <p>Esta ação não poderá ser desfeita.</p>
           <div className="logout-modal-buttons">

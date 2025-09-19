@@ -1,11 +1,14 @@
-.overlay {
+/*
+There are 3 colors  Blue Logo - Maya Blue (#78C5EF), Carolina Blue (#51A0D5) and YInMn Blue (#2C528C). 
+*/
+.overlay { /*tela translucida que aparece ao abrir o modal*/
   font-family: "OneBusFont", sans-serif;
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(3, 44, 68, 0.301);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -16,21 +19,28 @@
     font-family: "OneBusFont", sans-serif;
     background-color: var(--white);
     padding: 1.5rem;
-    border-radius: 8px;
+    border-radius: 18px;
     width: 400px;
     max-width: 90%;
     position: relative;
+    ;
   }
   
   .closeButton {
     font-family: "OneBusFont", sans-serif;
     position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    color: var(--text-muted);
+    background-color: white;
+    border-radius: 100px;
+    top: 0.9rem;  /* na parte de cima*/
+    right: 0.9rem; /*a direita*/
+    border: none; /* nenhuma borda no icone de x*/
+    cursor: pointer; /*mouse vira uma maozinha*/
+    font-size: 1.5rem; /*tamanho da fonte do x*/
+    color: #ef4444
   }
 
-  
+  .closeButton:hover {
+    font-size: 1.9rem;
+    top: 0.7rem;
+    right: 0.8rem;
+  }

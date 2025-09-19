@@ -6,7 +6,7 @@ import {
 
 const menuItems = [
   { path: '/funcionario', name: 'Funcionário', icon: <FaUser /> },
-  { path: '/funcionario-horario', name: 'Funcionário Horário', icon: <FaClock /> },
+  { path: '/funcionario-horario', name: 'Horário do Funcionário', icon: <FaClock /> },
   { path: '/veiculo', name: 'Veículo', icon: <FaBus /> },
   { path: '/veiculo-operacao', name: 'Veículo Operação', icon: <FaBus /> },
   { path: '/linha', name: 'Linha', icon: <FaRoute /> },
@@ -31,10 +31,7 @@ function Sidebar({ isOpen, onToggle, onLogoutClick }) {
 
       <nav className={styles.nav}>
         {menuItems.map((item) => (
-          <NavLink
-            to={item.path}
-            key={item.name}
-            className={({ isActive }) =>
+          <NavLink to={item.path} key={item.name} className={({ isActive }) =>
               isActive ? `${styles.navLink} ${styles.active}` : styles.navLink
             }
             title={item.name} // O atributo 'title' é crucial para o tooltip
