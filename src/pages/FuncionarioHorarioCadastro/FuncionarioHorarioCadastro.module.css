@@ -145,3 +145,8 @@
   font-size: 0.875rem;
   margin-top: 0.25rem;
 }
+
+.readOnlyInput {
+  background-color: #f8f9fa; /* Um cinza bem claro */
+  cursor: not-allowed;
+}

@@ -14,7 +14,7 @@ function FuncionarioEdicao() {
   const [roleOptions, setRoleOptions] = useState([]);
   const [statusOptions, setStatusOptions] = useState([]);
   const [bloodTypeOptions, setBloodTypeOptions] = useState([]);
-  const [cnhCategoryOptions, setCnhCategoryOptions] = useState([]);
+  
 
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState({ isOpen: false, message: '', isError: false });
@@ -22,18 +22,18 @@ function FuncionarioEdicao() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [employeeRes, rolesRes, statusRes, bloodTypesRes, cnhCategoriesRes] = await Promise.all([
+        const [employeeRes, rolesRes, statusRes, bloodTypesRes] = await Promise.all([
           api.get(`/employees/${id}`),
           api.get('/employees/roles'),
           api.get('/employees/status'),
           api.get('/employees/bloodTypes'),
-          api.get('/employees/cnhCategories'),
+       
         ]);
 
         setRoleOptions(rolesRes.data.value || []);
         setStatusOptions(statusRes.data.value || []);
         setBloodTypeOptions(bloodTypesRes.data.value || []);
-        setCnhCategoryOptions(cnhCategoriesRes.data.value || []);
+     
         
 
 
@@ -47,7 +47,7 @@ function FuncionarioEdicao() {
           status: employeeData.status.toString(),
           role: employeeData.role.toString(),
           bloodType: employeeData.bloodType.toString(),
-          cnhCategory: employeeData.cnhCategory ? employeeData.cnhCategory.toString() : '',
+        
           hiringDate: employeeData.hiringDate ? employeeData.hiringDate.split('T')[0] : '',
           cnhExpiration: employeeData.cnhExpiration ? employeeData.cnhExpiration.split('T')[0] : '',
         }
@@ -90,7 +90,6 @@ function FuncionarioEdicao() {
       phone: formData.phone.replace(/[^\d]/g, ''),
       hiringDate: formData.hiringDate || null,
       cnhNumber: formData.cnhNumber,
-      cnhCategory: formData.cnhCategory ? parseInt(formData.cnhCategory, 10) : null,
       cnhExpiration: formData.cnhExpiration,
       status: parseInt(formData.status, 10),
       image: formData.image,
@@ -182,14 +181,7 @@ function FuncionarioEdicao() {
             <label htmlFor="cnhNumber">Número da CNH</label>
             <input name="cnhNumber" type="text" value={formData.cnhNumber || ''} onChange={handleChange} required />
           </div>
-           <div className={styles.inputGroup}>
-            <label htmlFor="cnhCategory">Categoria CNH</label>
-            {/* CORREÇÃO APLICADA AQUI */}
-             <select name="cnhCategory" value={formData.cnhCategory || ''} onChange={handleChange}>
-                <option value="">Selecione...</option>
-                {cnhCategoryOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.name}</option>)}
-            </select>
-          </div>
+          
           <div className={styles.inputGroup}>
             <label htmlFor="cnhExpiration">Vencimento CNH</label>
             <input name="cnhExpiration" type="date" value={formData.cnhExpiration || ''} onChange={handleChange} required />

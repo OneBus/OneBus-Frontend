@@ -1,41 +1,43 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from './FuncionarioHorarioCadastro.module.css'; // Usando o CSS copiado
+import styles from './FuncionarioHorarioCadastro.module.css';
 import api from '../../services/api';
 import Modal from '../../components/Modal/Modal';
 
 function FuncionarioHorarioCadastro() {
   const navigate = useNavigate();
 
-  // Estado para os dados do formulário
+  // Estado alinhado com a API: employeeId, dayType, startTime, endTime
   const [formData, setFormData] = useState({
     employeeId: '',
-    weekDay: '',
+    dayType: '',
     startTime: '',
     endTime: '',
-    breakTime: '',
   });
 
-  // Estado para popular o menu de funcionários
+  // Estados para popular os menus
   const [employees, setEmployees] = useState([]);
+  const [dayTypeOptions, setDayTypeOptions] = useState([]);
   
-  // Estados de controle
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState({ isOpen: false, message: '', isError: false });
 
-  // Efeito para buscar a lista de funcionários quando a página carregar
+  // Busca tanto a lista de funcionários quanto os tipos de dia
   useEffect(() => {
-    const fetchEmployees = async () => {
+    const fetchData = async () => {
       try {
-        // Usando o endpoint de listagem que já temos, sem paginação para pegar todos
-        const response = await api.get('/employees', { params: { PageSize: 1000 } });
-        setEmployees(response.data.value.items || []);
+        const [employeesRes, dayTypesRes] = await Promise.all([
+          api.get('/employees', { params: { PageSize: 1000 } }),
+          api.get('/employeesWorkdays/daysTypes')
+        ]);
+        setEmployees(employeesRes.data.value.items || []);
+        setDayTypeOptions(dayTypesRes.data.value || []);
       } catch (err) {
-        console.error("Erro ao buscar funcionários:", err);
-        setFeedback({ isOpen: true, message: "Não foi possível carregar a lista de funcionários.", isError: true });
+        console.error("Erro ao carregar dados do formulário:", err);
+        setFeedback({ isOpen: true, message: "Não foi possível carregar os dados necessários.", isError: true });
       }
     };
-    fetchEmployees();
+    fetchData();
   }, []);
 
   const handleChange = (e) => {
@@ -47,17 +49,23 @@ function FuncionarioHorarioCadastro() {
     e.preventDefault();
     setLoading(true);
 
-    // Validação simples
-    if (!formData.employeeId || !formData.weekDay || !formData.startTime || !formData.endTime) {
+    if (!formData.employeeId || !formData.dayType || !formData.startTime || !formData.endTime) {
       setFeedback({ isOpen: true, message: 'Preencha todos os campos obrigatórios.', isError: true });
       setLoading(false);
       return;
     }
     
+    // Converte os IDs para número antes de enviar
+    const payload = {
+      employeeId: parseInt(formData.employeeId, 10),
+      dayType: parseInt(formData.dayType, 10),
+      startTime: formData.startTime,
+      endTime: formData.endTime,
+    };
+    
     try {
-      // ATENÇÃO: Assumindo que o endpoint para criar um horário seja este.
-      // Verifique com o backend qual é a rota e o formato do payload corretos.
-      await api.post('/employee-schedules', formData); 
+      // Endpoint para criar um novo registro de horário
+      await api.post('/employeesWorkdays', payload); 
       setFeedback({ isOpen: true, message: 'Horário cadastrado com sucesso!', isError: false });
     } catch (err) {
       const errorMessage = err.response?.data?.message || 'Erro ao cadastrar o horário.';
@@ -70,7 +78,7 @@ function FuncionarioHorarioCadastro() {
   const handleCloseModal = () => {
     setFeedback({ isOpen: false, message: '', isError: false });
     if (!feedback.isError) {
-      navigate('/funcionario-horario'); // Volta para a lista de horários
+      navigate('/funcionario-horario');
     }
   };
 
@@ -96,10 +104,15 @@ function FuncionarioHorarioCadastro() {
             </select>
           </div>
 
-          {/* Campo Dia da Semana */}
+          {/* Menu de seleção para Tipo de Dia */}
           <div className={styles.inputGroup}>
-            <label htmlFor="weekDay">Dia da Semana</label>
-            <input name="weekDay" type="text" placeholder="Ex: Segunda a Sexta" value={formData.weekDay} onChange={handleChange} required />
+            <label htmlFor="dayType">Tipo de Dia</label>
+            <select name="dayType" value={formData.dayType} onChange={handleChange} required>
+              <option value="">Selecione o tipo...</option>
+              {dayTypeOptions.map(option => (
+                <option key={option.value} value={option.value}>{option.name}</option>
+              ))}
+            </select>
           </div>
 
           {/* Campo Entrada */}
@@ -113,9 +126,6 @@ function FuncionarioHorarioCadastro() {
             <label htmlFor="endTime">Horário de Saída</label>
             <input name="endTime" type="time" value={formData.endTime} onChange={handleChange} required />
           </div>
-
-          {/* Campo Intervalo */}
-      
         </div>
 
         <div className={styles.actions}>

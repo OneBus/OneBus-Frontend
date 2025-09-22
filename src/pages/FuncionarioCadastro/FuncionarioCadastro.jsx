@@ -17,8 +17,7 @@ function FuncionarioCadastro() {
   // Nomes dos campos alinhados com a API (camelCase em inglês)
   const [formData, setFormData] = useState({
     name: '', rg: '', cpf: '', bloodType: '', code: '', role: '',
-    email: '', phone: '', hiringDate: '', cnhNumber: '',
-    cnhCategory: '', cnhExpiration: '', status: '', image: null,
+    email: '', phone: '', hiringDate: '', cnhNumber: '',  cnhExpiration: '', status: '', image: null,
     password: '',
   });
   
@@ -26,7 +25,7 @@ function FuncionarioCadastro() {
   const [roleOptions, setRoleOptions] = useState([]);
   const [statusOptions, setStatusOptions] = useState([]);
   const [bloodTypeOptions, setBloodTypeOptions] = useState([]);
-  const [cnhCategoryOptions, setCnhCategoryOptions] = useState([]);
+
 
 //declara estados para validação do formulário erro, se todos os campos forma preenchidos, de carregamento e de modais
   const [errors, setErrors] = useState({});
@@ -39,11 +38,11 @@ function FuncionarioCadastro() {
  useEffect(() => {
     const fetchFilterOptions = async () => {
       try {
-        const [rolesRes, statusRes, bloodTypesRes, cnhCategoriesRes] = await Promise.all([
+        const [rolesRes, statusRes, bloodTypesRes] = await Promise.all([
           api.get('/employees/roles'),
           api.get('/employees/status'),
           api.get('/employees/bloodTypes'),
-          api.get('/employees/cnhCategories'),
+          
         ]);
         // Log para depuração final
         console.log('Opções de Cargo recebidas:', rolesRes.data.value);
@@ -51,7 +50,7 @@ function FuncionarioCadastro() {
         setRoleOptions(rolesRes.data.value || []);
         setStatusOptions(statusRes.data.value || []);
         setBloodTypeOptions(bloodTypesRes.data.value || []);
-        setCnhCategoryOptions(cnhCategoriesRes.data.value || []);
+       
       } catch (err) {
         console.error("Erro ao buscar opções de filtro:", err);
         setFeedback({ isOpen: true, message: "Não foi possível carregar as opções do formulário.", isError: true });
@@ -180,7 +179,6 @@ function FuncionarioCadastro() {
       phone: formData.phone.replace(/[^\d]/g, ''),
       hiringDate: formData.hiringDate || null,
       cnhNumber: formData.cnhNumber,
-      cnhCategory: formData.cnhCategory ? parseInt(formData.cnhCategory, 10) : null,
       cnhExpiration: formData.cnhExpiration,
       status: parseInt(formData.status, 10),
       image: formData.image,
@@ -322,14 +320,8 @@ function FuncionarioCadastro() {
             <label htmlFor="cnhNumber">Número da CNH <span className={styles.required}>*</span></label>
             <input name="cnhNumber" type="text" value={formData.cnhNumber} onChange={handleChange} maxLength="11" required />
           </div>
-         <div className={styles.inputGroup}>
-  <label htmlFor="cnhCategory">Categoria CNH</label>
-   <select name="cnhCategory" value={formData.cnhCategory} onChange={handleChange}>
-      <option value="">Selecione...</option>
-      {/* Garanta que o 'value' aqui é opt.id */}
-      {cnhCategoryOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.name}</option>)}
-  </select>
-</div>
+         
+
         
           <div className={styles.inputGroup}>
             <label htmlFor="cnhExpiration">Vencimento CNH <span className={styles.required}>*</span></label>
