@@ -19,29 +19,19 @@ const useDebounce = (value, delay) => {
 function Funcionario() {
   const navigate = useNavigate();
 
-  // Estados da página
   const [funcionarios, setFuncionarios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [employeeToDelete, setEmployeeToDelete] = useState(null);
-
-  // Estados para filtros, paginação e ordenação
-  const [filters, setFilters] = useState({
-    value: '',
-    status: '',
-    role: '',
-  });
+  const [filters, setFilters] = useState({ value: '', status: '', role: '' });
   const [pagination, setPagination] = useState({
-    currentPage: 0,
-    totalPages: 0,
-    pageSize: 10,
+    currentPage: 0, pageSize: 10, totalPages: 0, hasNextPage: false, hasPreviousPage: false,
   });
-  
-  // Estados para popular os dropdowns de filtro
+  const [sortConfig, setSortConfig] = useState({ field: 'id', order: 'Desc' });
   const [statusOptions, setStatusOptions] = useState([]);
   const [roleOptions, setRoleOptions] = useState([]);
-
   const debouncedSearchTerm = useDebounce(filters.value, 500);
+
 
   // Efeito para buscar as opções dos filtros (status, cargos, etc.)
   useEffect(() => {
@@ -66,7 +56,7 @@ function Funcionario() {
   }, []);
 
   // Função principal para buscar os funcionários
-  const fetchFuncionarios = useCallback(async () => {
+ const fetchFuncionarios = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -76,14 +66,15 @@ function Funcionario() {
         Value: debouncedSearchTerm || null,
         Status: filters.status || null,
         Role: filters.role || null,
-     
+        OrderField: sortConfig.field,
+        OrderType: sortConfig.order,
       };
 
       const response = await api.get('/employees', { params });
       
-      const { items, totalPages} = response.data.value;
+      const { items, totalPages, currentPage, hasNextPage, hasPreviousPage } = response.data.value;
       setFuncionarios(items);
-      setPagination(prev => ({ ...prev, totalPages }));
+      setPagination(prev => ({ ...prev, totalPages, currentPage: currentPage - 1, hasNextPage, hasPreviousPage }));
 
     } catch (err) {
       setError('Não foi possível carregar os funcionários.');
@@ -91,8 +82,9 @@ function Funcionario() {
     } finally {
       setLoading(false);
     }
-  }, [pagination.currentPage, pagination.pageSize, debouncedSearchTerm, filters.status, filters.role]);
+  }, [pagination.currentPage, pagination.pageSize, debouncedSearchTerm, filters.status, filters.role, sortConfig]);
 
+  // 2. O useEffect agora "assiste" à função 'fetchFuncionarios'
   useEffect(() => {
     fetchFuncionarios();
   }, [fetchFuncionarios]);
@@ -126,14 +118,23 @@ function Funcionario() {
     }
   };
 
-const handlePageSizeChange = (e) => {
-  const newSize = parseInt(e.target.value, 10);
-  setPagination({
-    ...pagination,
-    pageSize: newSize,
-    currentPage: 0, // Sempre volta para a primeira página ao mudar o tamanho
-  });
-};
+
+  const handlePageSizeChange = (e) => {
+    const newSize = parseInt(e.target.value, 10);
+    setPagination(prev => ({
+      ...prev,
+      pageSize: newSize,
+      currentPage: 0, // Sempre volta para a primeira página ao mudar o tamanho
+    }));
+  };
+//const handlePageSizeChange = (e) => {
+  //const newSize = parseInt(e.target.value, 10);
+ // setPagination({
+  //  ...pagination,
+  //  pageSize: newSize,
+//currentPage: 0, // Sempre volta para a primeira página ao mudar o tamanho
+  //});
+//};
 
   return (
     <div className={styles.container}>
@@ -232,37 +233,40 @@ const handlePageSizeChange = (e) => {
 
 
  {/* PAGINAÇÃO MOVIDA PARA FORA E PARA BAIXO DO tableContainer */}
-      {!loading && !error && pagination.totalPages > 0 && (
-        <div className={styles.pagination}>
-          <button 
-            onClick={() => handlePageChange(pagination.currentPage - 1)} 
-            disabled={!pagination.hasPreviousPage}
-            className={styles.pageButton}
-          >
-            &lt; Anterior
-          </button>
 
-          <div className={styles.pageNumbers}>
-            {generatePageNumbers(pagination.currentPage, pagination.totalPages).map(pageNumber => (
-              <button
-                key={pageNumber}
-                onClick={() => handlePageChange(pageNumber)}
-                className={`${styles.pageButton} ${pagination.currentPage === pageNumber ? styles.activePage : ''}`}
-              >
-                {pageNumber + 1}
-              </button>
-            ))}
-          </div>
-
-    <button 
-      onClick={() => handlePageChange(pagination.currentPage + 1)} 
+ {/* NOVO: Componente de paginação completo */}
+            {pagination.totalPages > 1 && (
+              <div className={styles.pagination}>
+                <button 
+                  onClick={() => handlePageChange(pagination.currentPage - 1)} 
+                  disabled={!pagination.hasPreviousPage}
+                  className={styles.pageButton}
+                >
+                  &lt; Anterior
+                </button>
+                <div className={styles.pageNumbers}>
+                  {generatePageNumbers(pagination.currentPage, pagination.totalPages).map(pageNumber => (
+                    <button
+                      key={pageNumber}
+                      onClick={() => handlePageChange(pageNumber)}
+                      className={`${styles.pageButton} ${pagination.currentPage === pageNumber ? styles.activePage : ''}`}
+                    >
+                      {pageNumber + 1}
+                    </button>
+                  ))}
+                </div>
+                <button 
+                  onClick={() => handlePageChange(pagination.currentPage + 1)} 
+                  disabled={!pagination.hasNextPage}
+                  className={styles.pageButton}
+                >
+                  Próximo &gt;
+                </button>
+              </div>
+            )}
+        
+       
      
-      className={styles.pageButton}
-    >
-      Próximo &gt;
-    </button>
-  </div>
-)}
 
       <Modal isOpen={!!employeeToDelete} onClose={() => setEmployeeToDelete(null)}>
         <div className="logout-modal-content">
