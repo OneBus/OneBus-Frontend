@@ -150,3 +150,40 @@
   background-color: #f8f9fa; /* Um cinza bem claro */
   cursor: not-allowed;
 }
+
+/* Estilo para o asterisco e a tooltip de campo obrigatório */
+.requiredTooltip {
+  color: #ef4444; /* Vermelho */
+  margin-left: 4px;
+  cursor: pointer; /* Muda o cursor para indicar que há uma dica */
+  position: relative;
+}
+
+/* A tooltip (caixa de texto) */
+.requiredTooltip::after {
+  content: attr(data-tooltip); /* Pega o texto do atributo 'data-tooltip' */
+  position: absolute;
+  bottom: 100%; /* Posiciona acima do asterisco */
+  left: 50%;
+  transform: translateX(-50%);
+  
+  /* Estilo da caixa */
+  background-color: #ef4444; /* Fundo vermelho */
+  color: white;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  
+  /* Escondido por padrão */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s, visibility 0.2s;
+  z-index: 10;
+}
+
+/* Mostra a tooltip ao passar o mouse */
+.requiredTooltip:hover::after {
+  opacity: 1;
+  visibility: visible;
+}

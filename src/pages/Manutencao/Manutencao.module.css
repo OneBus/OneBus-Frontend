@@ -1,0 +1,212 @@
+.container {
+  padding: 2rem;
+  margin-top: 70px;
+}
+
+/* Cabeçalho principal com título e botão */
+.headerBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.headerBar h1 {
+  font-size: 2rem;
+  color: var(--text-dark);
+  font-weight: 700;
+}
+
+.cadastrarBtn {
+  background-color: var(--secondary-purple);
+  color: var(--white);
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 15px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.cadastrarBtn:hover {
+  background-color: #8146c2;
+  transform: translateY(-2px);
+}
+
+
+/* Barra de filtros */
+.filterBar {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background-color: var(--white);
+   border-radius: 15px;
+  box-shadow: var(--shadow-sm);
+}
+
+.searchContainer {
+  position: relative;
+  flex-grow: 1; /* Faz a busca ocupar o espaço disponível */
+}
+
+.searchIcon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  
+}
+
+.searchInput {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.75rem; /* Espaço para o ícone */
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.filterSelect {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background-color: var(--white);
+  font-family: inherit;
+  font-size: 1rem;
+  min-width: 180px; /* Largura mínima para os filtros */
+}
+
+/* Tabela e seus conteúdos */
+.tableContainer {
+  background-color: var(--white);
+  border-radius: 15px;
+  box-shadow: var(--shadow-sm);
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  padding: 1rem 1.5rem;
+  text-align: left;
+  background-color: var(--main-bg);
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+}
+
+.table td {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+  color: var(--text-dark);
+}
+
+/* Remove a borda da última linha */
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-weight: 500;
+}
+
+.userAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.actionIcons {
+  display: flex;
+  gap: 1.5rem;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+}
+
+.actionIcons > svg {
+  cursor: pointer;
+  transition: color 0.2s, transform 0.2s;
+}
+
+.actionIcons > svg:hover {
+  color: var(--primary-blue);
+  transform: scale(1.1);
+}
+
+.message, .messageError {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-muted);
+}
+
+.messageError {
+  color: #ef4444;
+}
+
+/* --- ESTILOS DA NOVA PAGINAÇÃO --- */
+.pagination {
+  display: flex;
+  justify-content: center; /* Centraliza o componente */
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  padding: 0.75rem; /* Padding um pouco menor */
+  background-color: var(--white);
+  border: 1px solid var(--border-color); /* Borda sutil */
+  border-radius: 17px;
+  width: fit-content; /* Faz o container se ajustar ao conteúdo */
+  margin-left: auto; /* Centraliza o container na horizontal */
+  margin-right: auto;
+  box-shadow: var(--shadow-sm);
+}
+
+.pageNumbers {
+  display: flex;
+  gap: 0.5rem;
+  border-left: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
+  padding: 0 0.5rem;
+}
+
+.pageButton {
+  padding: 0.5rem 1rem;
+  border: 1px solid transparent; /* Bordas transparentes por padrão */
+  background-color: var(--white);
+  border-radius: 13px;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.pageButton:disabled {
+  color: #ccc;
+  cursor: not-allowed;
+  background-color: transparent;
+}
+
+.pageButton:not(:disabled):hover {
+  background-color: var(--main-bg);
+}
+
+.activePage {
+  border: 1px solid var(--border-color);
+  background-color: var(--main-bg); /* Fundo sutil para a página ativa */
+  color: var(--text-dark);
+  font-weight: bold;
+}

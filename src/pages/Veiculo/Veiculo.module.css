@@ -1,177 +1,212 @@
 .container {
-  /* Adiciona um preenchimento interno e margens externas */
   padding: 2rem;
-  margin: 2rem;
-  margin-top: 90px; /* Espaço para o Header fixo */
-
-  /* Estilo do card */
-  background-color: var(--white);
-  border-radius: 8px;
-  box-shadow: var(--shadow-sm);
+  margin-top: 70px;
 }
 
-.header {
+/* Cabeçalho principal com título e botão */
+.headerBar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap; /* Permite que os itens quebrem linha em telas pequenas */
-  gap: 1rem; /* Espaçamento entre o título e o botão */
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: 1.5rem;
   margin-bottom: 2rem;
 }
 
-.header h1 {
+.headerBar h1 {
+  font-size: 2rem;
   color: var(--text-dark);
-  font-size: 1.75rem;
+  font-weight: 700;
 }
 
-/* --- ESTILO DO BOTÃO DE VOLTAR --- */
-.backButton {
-  background: none;
-  border: 1px solid var(--border-color);
-  color: var(--text-muted);
-  padding: 0.75rem 1.5rem;
-  border-radius: 15px;
-  font-weight: bold;
-  font-family: inherit;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: background-color 0.2s, color 0.2s;
-}
-
-.backButton:hover {
-  background-color: var(--main-bg);
-  color: var(--text-dark);
-}
-
-/* --- LAYOUT RESPONSIVO DO FORMULÁRIO --- */
-.formGrid {
-  display: grid;
-  gap: 1.5rem; /* Espaçamento consistente entre os campos */
-
-  /* Padrão (Mobile): 1 coluna */
-  grid-template-columns: 1fr;
-}
-
-/* Telas de Tablet (e maiores): 2 colunas */
-@media (min-width: 768px) {
-  .formGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-/* Telas de Desktop (e maiores): 3 colunas */
-@media (min-width: 1024px) {
-  .formGrid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-/* --- ESTILO DOS CAMPOS DO FORMULÁRIO --- */
-.inputGroup {
-  display: flex;
-  flex-direction: column;
-}
-
-.inputGroup label {
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-  color: var(--text-dark);
-}
-
-.inputGroup input,
-.inputGroup select {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid var(--border-color);
-  border-radius: 15px;
-  font-size: 1rem;
-  font-family: inherit; /* Garante que a fonte seja herdada */
-  background-color: var(--white);
-  color: var(--text-dark);
-}
-
-.inputGroup input:focus,
-.inputGroup select:focus {
-  outline: none;
-  border-color: var(--primary-blue);
-  box-shadow: 0 0 0 3px rgba(0, 160, 220, 0.2);
-}
-
-/* Classe para o asterisco de campo obrigatório */
-.required {
-  color: #ef4444; /* Vermelho */
-  margin-left: 4px;
-}
-
-/* --- SEÇÃO DE AÇÕES E BOTÃO SALVAR --- */
-.actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--border-color);
-}
-
-.saveButton {
+.cadastrarBtn {
   background-color: var(--secondary-purple);
   color: var(--white);
   border: none;
-  padding: 0.8rem 2.5rem;
+  padding: 0.8rem 1.5rem;
   border-radius: 15px;
   font-size: 1rem;
   font-weight: bold;
-  font-family: inherit;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, transform 0.2s;
 }
 
-.saveButton:hover {
-  background-color: #8146c2; /* Um tom mais escuro do roxo */
+.cadastrarBtn:hover {
+  background-color: #8146c2;
+  transform: translateY(-2px);
 }
 
-.saveButton:disabled {
-  background-color: #ccc;
-  color: #666;
-  cursor: not-allowed;
-}
 
-/* ... seu CSS existente ... */
-
-/* NOVO: Estilo para os textos de erro de validação */
-.errorText {
-  color: #ef4444; /* Vermelho */
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
-}
-
-.sectionTitle {
-  margin-top: 2rem;
-  margin-bottom: 1.5rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--border-color);
-  color: var(--primary-blue);
-}
-
-.inputGroupRadio {
+/* Barra de filtros */
+.filterBar {
   display: flex;
-  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background-color: var(--white);
+   border-radius: 15px;
+  box-shadow: var(--shadow-sm);
 }
-.inputGroupRadio > label {
-  margin-bottom: 0.5rem;
-  font-weight: 500;
+
+.searchContainer {
+  position: relative;
+  flex-grow: 1; /* Faz a busca ocupar o espaço disponível */
+}
+
+.searchIcon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  
+}
+
+.searchInput {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.75rem; /* Espaço para o ícone */
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.filterSelect {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background-color: var(--white);
+  font-family: inherit;
+  font-size: 1rem;
+  min-width: 180px; /* Largura mínima para os filtros */
+}
+
+/* Tabela e seus conteúdos */
+.tableContainer {
+  background-color: var(--white);
+  border-radius: 15px;
+  box-shadow: var(--shadow-sm);
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  padding: 1rem 1.5rem;
+  text-align: left;
+  background-color: var(--main-bg);
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+}
+
+.table td {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
   color: var(--text-dark);
 }
-.inputGroupRadio div {
+
+/* Remove a borda da última linha */
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-weight: 500;
+}
+
+.userAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.actionIcons {
   display: flex;
   gap: 1.5rem;
-  align-items: center;
-  height: 100%;
+  color: var(--text-muted);
+  font-size: 1.1rem;
 }
-.inputGroupRadio div label {
+
+.actionIcons > svg {
+  cursor: pointer;
+  transition: color 0.2s, transform 0.2s;
+}
+
+.actionIcons > svg:hover {
+  color: var(--primary-blue);
+  transform: scale(1.1);
+}
+
+.message, .messageError {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-muted);
+}
+
+.messageError {
+  color: #ef4444;
+}
+
+/* --- ESTILOS DA NOVA PAGINAÇÃO --- */
+.pagination {
   display: flex;
+  justify-content: center; /* Centraliza o componente */
   align-items: center;
   gap: 0.5rem;
-  font-weight: normal;
+  margin-top: 1.5rem;
+  padding: 0.75rem; /* Padding um pouco menor */
+  background-color: var(--white);
+  border: 1px solid var(--border-color); /* Borda sutil */
+  border-radius: 17px;
+  width: fit-content; /* Faz o container se ajustar ao conteúdo */
+  margin-left: auto; /* Centraliza o container na horizontal */
+  margin-right: auto;
+  box-shadow: var(--shadow-sm);
+}
+
+.pageNumbers {
+  display: flex;
+  gap: 0.5rem;
+  border-left: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
+  padding: 0 0.5rem;
+}
+
+.pageButton {
+  padding: 0.5rem 1rem;
+  border: 1px solid transparent; /* Bordas transparentes por padrão */
+  background-color: var(--white);
+  border-radius: 13px;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.pageButton:disabled {
+  color: #ccc;
+  cursor: not-allowed;
+  background-color: transparent;
+}
+
+.pageButton:not(:disabled):hover {
+  background-color: var(--main-bg);
+}
+
+.activePage {
+  border: 1px solid var(--border-color);
+  background-color: var(--main-bg); /* Fundo sutil para a página ativa */
+  color: var(--text-dark);
+  font-weight: bold;
 }

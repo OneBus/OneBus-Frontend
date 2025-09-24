@@ -305,7 +305,7 @@ function FuncionarioCadastro() {
   </select>
 </div>
           <div className={styles.inputGroup}>
-            <label htmlFor="email">email <span className={styles.required}>*</span></label>
+            <label htmlFor="email">Email <span className={styles.required}>*</span></label>
             <input name="email" type="email" value={formData.email} onChange={handleChange} required />
           </div>
           <div className={styles.inputGroup}>

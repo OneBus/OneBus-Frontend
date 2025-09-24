@@ -44,7 +44,7 @@ function Sidebar({ isOpen, onToggle, onLogoutClick }) {
       
       <div className={styles.logout} onClick={onLogoutClick}>
         <FaSignOutAlt />
-        <span className={styles.linkName}>Log out</span>
+        <span className={styles.linkName}>Sair</span>
       </div>
     </div>
   );

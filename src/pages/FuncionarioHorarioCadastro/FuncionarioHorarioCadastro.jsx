@@ -7,6 +7,12 @@ import Modal from '../../components/Modal/Modal';
 function FuncionarioHorarioCadastro() {
   const navigate = useNavigate();
 
+  const RequiredIndicator = () => (
+  <span className={styles.requiredTooltip} data-tooltip="Campo obrigatório!">
+    *
+  </span>
+);
+
   // Estado alinhado com a API: employeeId, dayType, startTime, endTime
   const [formData, setFormData] = useState({
     employeeId: '',
@@ -95,7 +101,8 @@ function FuncionarioHorarioCadastro() {
         <div className={styles.formGrid}>
           {/* Menu de seleção para Funcionário */}
           <div className={styles.inputGroup}>
-            <label htmlFor="employeeId">Funcionário</label>
+            {/* ATUALIZADO: Adicionado o componente RequiredIndicator */}
+            <label htmlFor="employeeId">Funcionário <RequiredIndicator /></label>
             <select name="employeeId" value={formData.employeeId} onChange={handleChange} required>
               <option value="">Selecione um funcionário...</option>
               {employees.map(employee => (
@@ -106,7 +113,7 @@ function FuncionarioHorarioCadastro() {
 
           {/* Menu de seleção para Tipo de Dia */}
           <div className={styles.inputGroup}>
-            <label htmlFor="dayType">Tipo de Dia</label>
+            <label htmlFor="dayType">Tipo de Dia <RequiredIndicator /></label>
             <select name="dayType" value={formData.dayType} onChange={handleChange} required>
               <option value="">Selecione o tipo...</option>
               {dayTypeOptions.map(option => (
@@ -117,13 +124,13 @@ function FuncionarioHorarioCadastro() {
 
           {/* Campo Entrada */}
           <div className={styles.inputGroup}>
-            <label htmlFor="startTime">Horário de Entrada</label>
+            <label htmlFor="startTime">Horário de Entrada <RequiredIndicator /></label>
             <input name="startTime" type="time" value={formData.startTime} onChange={handleChange} required />
           </div>
 
           {/* Campo Saída */}
           <div className={styles.inputGroup}>
-            <label htmlFor="endTime">Horário de Saída</label>
+            <label htmlFor="endTime">Horário de Saída <RequiredIndicator /></label>
             <input name="endTime" type="time" value={formData.endTime} onChange={handleChange} required />
           </div>
         </div>

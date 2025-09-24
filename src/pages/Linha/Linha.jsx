@@ -1,99 +1,102 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Linha.module.css'; // Usando o CSS copiado
+import { FaEdit, FaTrash, FaSearch } from 'react-icons/fa';
+import Modal from '../../components/Modal/Modal';
 
-function LinhaCadastro() {
+// Dados estáticos para o mockup da tabela de linhas
+const mockData = [
+  { id: 1, numero: '824EX1', nome: 'Jd. Isaura - Lapa', sentido: 'Circular' },
+  { id: 2, numero: '577P-10', nome: 'Jd. Miriam - Vila Mariana', sentido: 'Ida e Volta' },
+  { id: 3, numero: '408A-10', nome: 'Machado de Assis - Cardoso de Almeida', sentido: 'Ida' },
+  { id: 4, numero: '917H-10', nome: 'Term. Pirituba - Metrô Vila Mariana', sentido: 'Volta' },
+];
+
+function Linha() {
   const navigate = useNavigate();
 
-  // Estado para os dados do formulário da linha
-  const [formData, setFormData] = useState({
-    numero: '',
-    nome: '',
-    tipo: '',
-    tempoViagem: '',
-    quilometragem: '',
-    sentido: '',
-  });
+  const [lineToDelete, setLineToDelete] = useState(null);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prevState => ({ ...prevState, [name]: value }));
+  const handleCadastrarClick = () => {
+    navigate('/linha/cadastrar');
   };
 
-  const handleSave = (e) => {
-    e.preventDefault();
-    console.log("Dados da linha a serem salvos:", formData);
-    alert('Mockup: Linha salva no console!');
-    navigate('/linha'); // Rota de exemplo para a lista de linhas
+  const handleEditClick = (id) => {
+    navigate(`/linha/editar/${id}`);
+  };
+
+  const handleDeleteClick = (line) => {
+    setLineToDelete(line);
+  };
+
+  const handleConfirmDelete = () => {
+    console.log("Deletando linha:", lineToDelete);
+    setLineToDelete(null); // Apenas fecha o modal no mockup
   };
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
-        <h1>Cadastrar Nova Linha</h1>
-        <button onClick={() => navigate('/linha')} className={styles.backButton}>
-          Voltar para a Lista
+      <div className={styles.headerBar}>
+        <h1>Linhas</h1>
+        <button className={styles.cadastrarBtn} onClick={handleCadastrarClick}>
+          Cadastrar Linha
         </button>
       </div>
       
-      <form className={styles.form} onSubmit={handleSave} noValidate>
-        <div className={styles.formGrid}>
-          {/* Campo Número */}
-          <div className={styles.inputGroup}>
-            <label htmlFor="numero">Número da Linha</label>
-            <input name="numero" id="numero" type="text" placeholder="Ex: 824EX1" value={formData.numero} onChange={handleChange} required />
-          </div>
+      <div className={styles.filterBar}>
+        <div className={styles.searchContainer}>
+          <FaSearch className={styles.searchIcon} />
+          <input name="value" type="text" placeholder="Pesquisar por nome ou número..." className={styles.searchInput}/>
+        </div>
+        <select className={styles.filterSelect}>
+          <option value="">Todos os Sentidos</option>
+          <option value="ida">Ida</option>
+          <option value="volta">Volta</option>
+          <option value="circular">Circular</option>
+        </select>
+      </div>
 
-          {/* Campo Nome */}
-          <div className={styles.inputGroup}>
-            <label htmlFor="nome">Nome da Linha</label>
-            <input name="nome" id="nome" type="text" placeholder="Ex: Jd. Isaura - Lapa" value={formData.nome} onChange={handleChange} required />
-          </div>
+      <div className={styles.tableContainer}>
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>Número</th>
+              <th>Nome da Linha</th>
+              <th>Sentido</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            {mockData.map((linha) => (
+              <tr key={linha.id}>
+                <td>{linha.numero}</td>
+                <td>{linha.nome}</td>
+                <td>{linha.sentido}</td>
+                <td className={styles.actionIcons}>
+                  <FaEdit title="Editar" onClick={() => handleEditClick(linha.id)} />
+                  <FaTrash title="Excluir" onClick={() => handleDeleteClick(linha)} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-          {/* Campo Tipo */}
-          <div className={styles.inputGroup}>
-            <label htmlFor="tipo">Tipo</label>
-            <select name="tipo" id="tipo" value={formData.tipo} onChange={handleChange} required>
-              <option value="">Selecione...</option>
-              <option value="municipal">Municipal</option>
-              <option value="intermunicipal">Intermunicipal</option>
-              <option value="suburbano">Suburbano</option>
-              <option value="seletivo">Seletivo</option>
-            </select>
-          </div>
-
-          {/* Campo Tempo de Viagem */}
-          <div className={styles.inputGroup}>
-            <label htmlFor="tempoViagem">Tempo de Viagem</label>
-            <input name="tempoViagem" id="tempoViagem" type="text" value={formData.tempoViagem} onChange={handleChange} />
-          </div>
-
-          {/* Campo Quilometragem */}
-          <div className={styles.inputGroup}>
-            <label htmlFor="quilometragem">Quilometragem (KM)</label>
-            <input name="quilometragem" id="quilometragem" type="number" step="0.1" placeholder="Ex: 25.5" value={formData.quilometragem} onChange={handleChange} />
-          </div>
-
-          {/* Campo Sentido */}
-          <div className={styles.inputGroup}>
-            <label htmlFor="sentido">Sentido</label>
-            <select name="sentido" id="sentido" value={formData.sentido} onChange={handleChange} required>
-              <option value="">Selecione...</option>
-              <option value="ida">Ida</option>
-              <option value="volta">Volta</option>
-              <option value="circular">Circular</option>
-            </select>
+      <Modal isOpen={!!lineToDelete} onClose={() => setLineToDelete(null)}>
+        <div className="logout-modal-content">
+          <h3>Confirmar Exclusão</h3>
+          <p>
+            Tem certeza que deseja excluir a linha 
+            <strong> {lineToDelete?.nome}</strong>?
+          </p>
+          <div className="logout-modal-buttons">
+            <button className="btn-cancel" onClick={() => setLineToDelete(null)}>Cancelar</button>
+            <button className="btn-confirm" onClick={handleConfirmDelete}>Sim, Excluir</button>
           </div>
         </div>
-
-        <div className={styles.actions}>
-          <button type="submit" className={styles.saveButton}>
-            Salvar Linha
-          </button>
-        </div>
-      </form>
+      </Modal>
     </div>
   );
 }
 
-export default LinhaCadastro;
+export default Linha;
