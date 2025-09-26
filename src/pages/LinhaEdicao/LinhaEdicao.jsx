@@ -4,8 +4,11 @@ import styles from './LinhaEdicao.module.css'; // Usando o CSS copiado
 
 // Simula um "banco de dados" de onde buscaremos a linha para editar
 const mockDatabase = [
-  { id: 1, numero: '824EX1', nome: 'Jd. Isaura - Lapa', tipo: 'municipal', tempoViagem: '01:30', quilometragem: '22.5', sentido: 'circular' },
-  { id: 2, numero: '577P-10', nome: 'Jd. Miriam - Vila Mariana', tipo: 'municipal', tempoViagem: '01:15', quilometragem: '18.2', sentido: 'ida-volta' },
+  { id: 1, numero: '824EX1', nome: 'Pirapora Do Bom Jesus (Pq. Paiol) - Barueri (Centro)', tipo: 'intermunicipal' , tempoViagem: '01:10', quilometragem: '26.5', sentido: 'Volta' },
+  { id: 2, numero: '082DV1', nome: 'Pirapora Do Bom Jesus (Jd.Bom Jesus Via Paiol)- Osasco (Vila-Yara)', tipo: 'intermunicipal', tempoViagem: '02:20', quilometragem: '49.6', sentido: 'Ida ' },
+  { id: 3, numero: '467', nome: 'Santana de Parníba (Centro) - São Paulo (Lapa)', tipo: 'intermunicipal' , tempoViagem: '02:00', quilometragem: '39.8' ,sentido: 'Ida' },
+  { id: 4, numero: '830-2', nome: 'Centro Parnaíba - Jaguari', tipo: 'municipal'  , tempoViagem: '01:30',quilometragem:'21.7', sentido: 'Circular'},
+
 ];
 
 function LinhaEdicao() {

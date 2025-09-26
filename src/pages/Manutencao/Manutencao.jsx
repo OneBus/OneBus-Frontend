@@ -6,9 +6,9 @@ import Modal from '../../components/Modal/Modal';
 
 // Dados estáticos para o mockup da tabela
 const mockData = [
-  { id: 1, setor: 'Mecânica', descricao: 'Troca de óleo e filtros do motor do veículo Placa ABC-1234', dataInicio: '15/09/2025 08:00', dataFim: '15/09/2025 10:30', vistoriaVencimento: '20/12/2025' },
-  { id: 2, setor: 'Borracharia', descricao: 'Rodízio e calibragem de pneus do veículo Placa XYZ-5678', dataInicio: '16/09/2025 09:00', dataFim: '16/09/2025 09:45', vistoriaVencimento: 'N/A' },
-  { id: 3, setor: 'Funilaria', descricao: 'Reparo no para-choque dianteiro do veículo Placa QWE-9101', dataInicio: '18/09/2025 14:00', dataFim: '19/09/2025 17:00', vistoriaVencimento: '05/11/2025' },
+  { id: 1, setor: 'Mecânica', descricao: 'Troca de óleo e filtros do motor do veículo ', dataInicio: '15/09/2025 08:00', dataFim: '15/09/2025 10:30', vistoriaVencimento: '20/12/2025' },
+  { id: 2, setor: 'Borracharia', descricao: 'Rodízio e calibragem de pneus do veículo ', dataInicio: '16/09/2025 09:00', dataFim: '16/09/2025 09:45', vistoriaVencimento: 'N/A' },
+  { id: 3, setor: 'Funilaria', descricao: 'Reparo no para-choque dianteiro do veículo ', dataInicio: '18/09/2025 14:00', dataFim: '19/09/2025 17:00', vistoriaVencimento: '05/11/2025' },
   { id: 4, setor: 'Outros', descricao: 'Limpeza e higienização interna completa', dataInicio: '20/09/2025 11:00', dataFim: '20/09/2025 15:00', vistoriaVencimento: 'N/A' },
 ];
 

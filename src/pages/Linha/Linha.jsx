@@ -6,10 +6,10 @@ import Modal from '../../components/Modal/Modal';
 
 // Dados estáticos para o mockup da tabela de linhas
 const mockData = [
-  { id: 1, numero: '824EX1', nome: 'Jd. Isaura - Lapa', sentido: 'Circular' },
-  { id: 2, numero: '577P-10', nome: 'Jd. Miriam - Vila Mariana', sentido: 'Ida e Volta' },
-  { id: 3, numero: '408A-10', nome: 'Machado de Assis - Cardoso de Almeida', sentido: 'Ida' },
-  { id: 4, numero: '917H-10', nome: 'Term. Pirituba - Metrô Vila Mariana', sentido: 'Volta' },
+  { id: 1, numero: '824EX1', nome: 'Pirapora Do Bom Jesus (Pq. Paiol) - Barueri (Centro)', sentido: 'Volta' },
+  { id: 2, numero: '082DV1', nome: 'Pirapora Do Bom Jesus (Jd.Bom Jesus Via Paiol)- Osasco (Vila-Yara)', sentido: 'Ida ' },
+  { id: 3, numero: '467', nome: 'Santana de Parníba (Centro) - São Paulo (Lapa)', sentido: 'Ida' },
+  { id: 4, numero: '830-2', nome: 'Centro Parnaíba - Jaguari', sentido: 'Circular' },
 ];
 
 function Linha() {

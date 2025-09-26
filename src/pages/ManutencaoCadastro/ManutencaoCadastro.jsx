@@ -4,9 +4,9 @@ import styles from './ManutencaoCadastro.module.css'; // Usando o CSS copiado
 
 // Mock de dados para o <select> de prefixos
 const mockVeiculos = [
-    { id: 1, prefixo: '1001' },
-    { id: 2, prefixo: '1002' },
-    { id: 3, prefixo: '2005' },
+    { id: 1, prefixo: '00898' },
+    { id: 2, prefixo: '00859' },
+    { id: 3, prefixo: '21.574' },
 ];
 
 function ManutencaoCadastro() {

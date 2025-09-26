@@ -6,10 +6,10 @@ import Modal from '../../components/Modal/Modal';
 
 // Dados estáticos para o mockup da tabela
 const mockData = [
-  { id: 1, linhaNome: '824EX1 - Jd. Isaura', horaInicio: '04:30', horaFim: '23:00', dia: 'Segunda a Sexta' },
-  { id: 2, linhaNome: '577P-10 - Jd. Miriam', horaInicio: '05:00', horaFim: '00:00', dia: 'Segunda a Sexta' },
-  { id: 3, linhaNome: '824EX1 - Jd. Isaura', horaInicio: '05:30', horaFim: '22:00', dia: 'Sábados' },
-  { id: 4, linhaNome: '577P-10 - Jd. Miriam', horaInicio: '06:00', horaFim: '23:30', dia: 'Domingos e Feriados' },
+  { id: 1, linhaNome: '824EX1 - Pirapora Do Bom Jesus (Pq. Paiol) - Barueri (Centro)', horaInicio: '03:10', horaFim: '00:30', dia: 'Segunda a Sexta' },
+  { id: 2, linhaNome: '824EX1 - Pirapora Do Bom Jesus (Pq. Paiol) - Barueri (Centro)', horaInicio: '04:30', horaFim: '00:00', dia: 'Domingos e Feriados' },
+  { id: 3, linhaNome: '824EX1 - Pirapora Do Bom Jesus (Pq. Paiol) - Barueri (Centro)', horaInicio: '05:00', horaFim: '23:30', dia: 'Sábados' },
+
 ];
 
 function LinhaHorario() {
@@ -47,8 +47,8 @@ function LinhaHorario() {
         {/* Filtro de Linha */}
         <select className={styles.filterSelect}>
           <option value="">Todas as Linhas</option>
-          <option value="824EX1">824EX1 - Jd. Isaura</option>
-          <option value="577P-10">577P-10 - Jd. Miriam</option>
+          <option value="824EX1">824EX1 - Pirapora Do Bom Jesus (Pq. Paiol) - Barueri (Centro)</option>
+          <option value="577P-10">809 - Aldeia da Serra</option>
         </select>
 
         {/* Filtro de Dia */}

@@ -4,15 +4,15 @@ import styles from './ManutencaoEdicao.module.css'; // Usando o CSS copiado
 
 // Simula um "banco de dados" de onde buscaremos a manutenção para editar
 const mockDatabase = [
-  { id: 1, prefixo: '1001', setor: 'mecanica', descricao: 'Troca de óleo e filtros do motor do veículo Placa ABC-1234', dataInicio: '2025-09-15T08:00', dataTermino: '2025-09-15T10:30', vistoriaVencimento: '2025-12-20' },
-  { id: 2, prefixo: '1002', setor: 'borracharia', descricao: 'Rodízio e calibragem de pneus do veículo Placa XYZ-5678', dataInicio: '2025-09-16T09:00', dataTermino: '2025-09-16T09:45', vistoriaVencimento: '' },
+  { id: 1, prefixo: '00898', setor: 'mecanica', descricao: 'Troca de óleo e filtros do motor do veículo Placa ABC-1234', dataInicio: '2025-09-15T08:00', dataTermino: '2025-09-15T10:30', vistoriaVencimento: '2025-12-20' },
+  { id: 2, prefixo: '00858', setor: 'borracharia', descricao: 'Rodízio e calibragem de pneus do veículo Placa XYZ-5678', dataInicio: '2025-09-16T09:00', dataTermino: '2025-09-16T09:45', vistoriaVencimento: '' },
 ];
 
 // Mock de dados para o <select> de prefixos
 const mockVeiculos = [
-    { id: 1, prefixo: '1001' },
-    { id: 2, prefixo: '1002' },
-    { id: 3, prefixo: '2005' },
+    { id: 1, prefixo: '00898' },
+    { id: 2, prefixo: '00058' },
+    { id: 3, prefixo: '21.574' },
 ];
 
 function ManutencaoEdicao() {

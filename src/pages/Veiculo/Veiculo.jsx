@@ -6,10 +6,10 @@ import Modal from '../../components/Modal/Modal';
 
 // Dados estáticos para o mockup da tabela de veículos
 const mockData = [
-  { id: 1, prefixo: '1001', modelo: 'Marcopolo Torino', modeloChassi: 'Mercedes-Benz OF-1721', placa: 'ABC-1234', portasEsquerdas: true, status: 'Ativo' },
-  { id: 2, prefixo: '1002', modelo: 'Caio Apache Vip IV', modeloChassi: 'Volkswagen 17.230', placa: 'DEF-5678', portasEsquerdas: false, status: 'Em Manutenção' },
-  { id: 3, prefixo: '2005', modelo: 'Marcopolo Senior', modeloChassi: 'Agrale MA 10.0', placa: 'GHI-9101', portasEsquerdas: false, status: 'Ativo' },
-  { id: 4, prefixo: '3010', modelo: 'Irizar i6', modeloChassi: 'Scania K360', placa: 'JKL-1121', portasEsquerdas: true, status: 'Inativo' },
+  { id: 1, prefixo: '00898', modelo: 'Apache s21', modeloChassi: 'Mercedes-Benz OF-1721', placa: 'ABC-1234', portasEsquerdas:false , status: 'Ativo' },
+  { id: 2, prefixo: '0938', modelo: 'Apache Vip IV', modeloChassi: 'Volkswagen 17.230', placa: 'DEF-5678', portasEsquerdas: true, status: 'Em Manutenção' },
+  { id: 3, prefixo: '27.445', modelo: 'Viale', modeloChassi: 'Agrale MA 10.0', placa: 'GHI-9101', portasEsquerdas: false, status: 'Ativo' },
+  { id: 4, prefixo: '231', modelo: 'Citmax', modeloChassi: 'Scania K360', placa: 'JKL-1121', portasEsquerdas: true, status: 'Inativo' },
 ];
 
 function Veiculo() {
