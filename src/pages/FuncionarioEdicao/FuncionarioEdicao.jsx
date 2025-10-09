@@ -116,7 +116,7 @@ function FuncionarioEdicao() {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1>Editar Funcionário de Nome {formData.name}</h1>
+        <h1>Editar Funcionário: {formData.name}</h1>
         <button onClick={() => navigate('/funcionario')} className={styles.backButton}>
           Voltar para a Lista
         </button>

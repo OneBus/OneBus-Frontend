@@ -1,30 +1,87 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from './LinhaCadastro.module.css'; // Usando o CSS copiado
+import styles from './LinhaCadastro.module.css';
+import api from '../../services/api';
+import Modal from '../../components/Modal/Modal';
 
 function LinhaCadastro() {
   const navigate = useNavigate();
 
-  // Estado para os dados do formulário da linha
+  // Estado alinhado com os campos da API
   const [formData, setFormData] = useState({
-    numero: '',
-    nome: '',
-    tipo: '',
-    tempoViagem: '',
-    quilometragem: '',
-    sentido: '',
+    number: '',
+    name: '',
+    type: '',
+    travelTime: '',
+    mileage:'', // Assumindo 'km' para quilometragem
+    directionType: '',
   });
+  
+  // Estados para popular os menus
+  const [typeOptions, setTypeOptions] = useState([]);
+  const [directionTypeOptions, setDirectionTypeOptions] = useState([]);
+
+  const [loading, setLoading] = useState(false);
+  const [feedback, setFeedback] = useState({ isOpen: false, message: '', isError: false });
+
+  // Busca as opções para os menus da API
+  useEffect(() => {
+    const fetchOptions = async () => {
+      try {
+        const [typesRes, directionsRes] = await Promise.all([
+          api.get('/lines/types'),
+          api.get('/lines/directionTypes'),
+        ]);
+        setTypeOptions(typesRes.data.value || []);
+        setDirectionTypeOptions(directionsRes.data.value || []);
+      } catch (err) {
+        console.error("Erro ao carregar opções do formulário:", err);
+        setFeedback({ isOpen: true, message: "Não foi possível carregar os dados para o formulário.", isError: true });
+      }
+    };
+    fetchOptions();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevState => ({ ...prevState, [name]: value }));
   };
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
-    console.log("Dados da linha a serem salvos:", formData);
-    alert('Mockup: Linha salva no console!');
-    navigate('/linha'); // Rota de exemplo para a lista de linhas
+    setLoading(true);
+
+    // Validação simples dos campos obrigatórios
+    if (!formData.number || !formData.name || !formData.type || !formData.directionType) {
+        setFeedback({ isOpen: true, message: "Preencha todos os campos obrigatórios.", isError: true });
+        setLoading(false);
+        return;
+    }
+
+    // Prepara o payload para a API, convertendo os IDs para número
+    const payload = {
+      number: formData.number,
+      name: formData.name,
+      type: parseInt(formData.type, 10),
+      travelTime: formData.travelTime || null,
+      mileage: formData.mileage ? parseFloat(formData.mileage) : null,
+      directionType: parseInt(formData.directionType, 10),
+    };
+    
+    try {
+      await api.post('/lines', payload);
+      setFeedback({ isOpen: true, message: 'Linha cadastrada com sucesso!', isError: false });
+    } catch (err) {
+      const errorMessage = err.response?.data?.message || 'Erro ao cadastrar a linha.';
+      setFeedback({ isOpen: true, message: errorMessage, isError: true });
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const handleCloseModal = () => {
+    setFeedback({ isOpen: false, message: '', isError: false });
+    if (!feedback.isError) navigate('/linha');
   };
 
   return (
@@ -38,60 +95,51 @@ function LinhaCadastro() {
       
       <form className={styles.form} onSubmit={handleSave} noValidate>
         <div className={styles.formGrid}>
-          {/* Campo Número */}
           <div className={styles.inputGroup}>
-            <label htmlFor="numero">Número da Linha</label>
-            <input name="numero" id="numero" type="text" placeholder="Ex: 824EX1" value={formData.numero} onChange={handleChange} required />
+            <label htmlFor="number">Número da Linha</label>
+            <input name="number" id="number" type="text" placeholder="Ex: 824EX1" value={formData.number} onChange={handleChange} required />
           </div>
-
-          {/* Campo Nome */}
           <div className={styles.inputGroup}>
-            <label htmlFor="nome">Nome da Linha</label>
-            <input name="nome" id="nome" type="text" placeholder="Ex: Jd. Isaura - Lapa" value={formData.nome} onChange={handleChange} required />
+            <label htmlFor="name">Nome da Linha</label>
+            <input name="name" id="name" type="text" placeholder="Ex: Jd. Isaura - Lapa" value={formData.name} onChange={handleChange} required />
           </div>
-
-          {/* Campo Tipo */}
           <div className={styles.inputGroup}>
-            <label htmlFor="tipo">Tipo</label>
-            <select name="tipo" id="tipo" value={formData.tipo} onChange={handleChange} required>
+            <label htmlFor="type">Tipo</label>
+            <select name="type" id="type" value={formData.type} onChange={handleChange} required>
               <option value="">Selecione...</option>
-              <option value="municipal">Municipal</option>
-              <option value="intermunicipal">Intermunicipal</option>
-              <option value="suburbano">Suburbano</option>
-              <option value="seletivo">Seletivo</option>
+              {typeOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.name}</option>)}
             </select>
           </div>
-
-          {/* Campo Tempo de Viagem */}
           <div className={styles.inputGroup}>
-            <label htmlFor="tempoViagem">Tempo de Viagem</label>
-            <input name="tempoViagem" id="tempoViagem" type="text" value={formData.tempoViagem} onChange={handleChange} />
+            <label htmlFor="travelTime">Tempo de Viagem</label>
+            <input name="travelTime" id="travelTime" type="time" value={formData.travelTime} onChange={handleChange} />
           </div>
-
-          {/* Campo Quilometragem */}
           <div className={styles.inputGroup}>
-            <label htmlFor="quilometragem">Quilometragem (KM)</label>
-            <input name="quilometragem" id="quilometragem" type="number" step="0.1" placeholder="Ex: 25.5" value={formData.quilometragem} onChange={handleChange} />
+            <label htmlFor="mileage">Quilometragem (KM)</label>
+            <input name="mileage" id="mileage" type="number" step="0.1" placeholder="Ex: 25.5" value={formData.mileage} onChange={handleChange} />
           </div>
-
-          {/* Campo Sentido */}
           <div className={styles.inputGroup}>
-            <label htmlFor="sentido">Sentido</label>
-            <select name="sentido" id="sentido" value={formData.sentido} onChange={handleChange} required>
+            <label htmlFor="directionType">Sentido</label>
+            <select name="directionType" id="directionType" value={formData.directionType} onChange={handleChange} required>
               <option value="">Selecione...</option>
-              <option value="ida">Ida</option>
-              <option value="volta">Volta</option>
-              <option value="circular">Circular</option>
+              {directionTypeOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.name}</option>)}
             </select>
           </div>
         </div>
 
         <div className={styles.actions}>
-          <button type="submit" className={styles.saveButton}>
-            Salvar Linha
+          <button type="submit" className={styles.saveButton} disabled={loading}>
+            {loading ? 'Salvando...' : 'Salvar Linha'}
           </button>
         </div>
       </form>
+      <Modal isOpen={feedback.isOpen} onClose={handleCloseModal}>
+        <div className="feedback-modal-content">
+          <h3>{feedback.isError ? 'Ocorreu um Erro' : 'Sucesso!'}</h3>
+          <p>{feedback.message}</p>
+          <button onClick={handleCloseModal} className="feedback-modal-button">Fechar</button>
+        </div>
+      </Modal>
     </div>
   );
 }

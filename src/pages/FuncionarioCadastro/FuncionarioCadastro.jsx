@@ -247,6 +247,50 @@ function FuncionarioCadastro() {
     if (!feedback.isError) navigate('/funcionario');
   };
 
+   // Mapeia os dados do formulário para o formato PascalCase que a API espera
+   //onst employeeData = {
+     //ome: formData.name,
+    //  Rg: formData.rg,
+      //Cpf: formData.cpf.replace(/[^\d]/g, ''),
+     // TipoSanguineo: parseInt(formData.bloodType, 10),
+     // Matrícula: formData.code,
+     // Cargo: parseInt(formData.role, 10),
+     // Email: formData.email,
+    /// Telefone: formData.phone.replace(/[^\d]/g, ''),
+    //  DataContratacao: formData.hiringDate || null,
+    //  NumeroCnh: formData.cnhNumber,
+      //CategoriaCnh: formData.cnhCategory ? parseInt(formData.cnhCategory, 10) : null,
+     // DataVencimentoCnh: formData.cnhExpiration,
+     // Status: parseInt(formData.status, 10),
+     // Imagem: formData.image,
+     // Password: formData.password,
+    //};
+
+
+    
+    //   // if (!employeeData.Email) delete employeeData.Email;
+    //if (!employeeData.DataContratacao) delete employeeData.DataContratacao;
+//
+   // try {
+     
+     // await api.post('/employees');
+    //  setFeedback({ isOpen: true, message: 'Funcionário cadastrado com sucesso!', isError: false });
+   // } catch (err) {
+    //  const errorMessages = err.response?.data?.errors;
+    //  let detailedMessage = 'Erro ao cadastrar funcionário.';
+      
+    //  if (errorMessages && Array.isArray(errorMessages)) {
+    //    detailedMessage = errorMessages[0].message;
+     // } else if (errorMessages) {
+    //    detailedMessage = Object.values(errorMessages)[0][0];
+     // }
+      
+    //  setFeedback({ isOpen: true, message: detailedMessage, isError: true });
+   // } finally {
+   //   setLoading(false);
+   // }
+//  };]
+
 
 
   //button salvar
@@ -262,7 +306,7 @@ function FuncionarioCadastro() {
         <div className={styles.formGrid}>
           <div className={styles.inputGroup}>
             <label htmlFor="name">Nome <span className={styles.required}>*</span></label>
-            <input name="name" type="text" value={formData.name} onChange={handleChange} maxLength="100" required />
+            <input name="name" type="text" value={formData.name} onChange={handleChange} maxLength="64" required />
           </div>
           <div className={styles.inputGroup}>
             <label htmlFor="rg">RG <span className={styles.required}>*</span></label>

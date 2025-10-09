@@ -1,76 +1,147 @@
-import React, { useState, useEffect } from 'react';
+ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from './VeiculoCadastro.module.css'; // Usando o CSS copiado
+import styles from './VeiculoCadastro.module.css';
 import api from '../../services/api';
+import Modal from '../../components/Modal/Modal';
 import { getTodayDate } from '../../utils/validators';
 
 function VeiculoCadastro() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    // Campos principais
-    tipo: '',
-    prefixo: '',
-    numeroDePortas: '',
-    numeroDeAssentos: '',
-    acessibilidade: false,
-    tipoCombustivel: '',
-    marca: '',
-    modelo: '',
-    ano: '',
-    placa: '',
-    cor: '',
-    numeroCarroceria: '',
-    numeroChassi: '',
-    numeroDeEixos: '',
-    dataIpvaVencimento: '',
-    licenciamentoVeiculo: '',
-    renavam: '',
-    tipoTransmissao: '',
-    status: '',
-    // Campos específicos de ônibus
-    servico: '',
-    marcaChassi: '',
-    modeloChassi: '',
-    anoChassi: '',
-    pisoBaixo: false,
-    portasEsquerdas: false,
-    seguroVencimento: '',
-    detetizacao: '',
+    type: '', prefix: '', numberDoors: '', numberSeats: '', hasAccessibility: true,
+    fuelType: '', brand: '', model: '', year: '', plate: '', color: '',
+    bodyworkNumber: '', numberChassis: '', axesNumber: '', ipvaExpiration: '',
+    licensing: '', renavam: '', transmissionType: '', status: '',
+    busServiceType: '', busChassisBrand: '', busChassisModel: '', busChassisYear: '',
+    busHasLowFloor: false, busHasLeftDoors: false, busInsuranceExpiration: '', busFumigateExpiration: '',image: null,
   });
-
+  
+  // Estados para popular todos os selects
+  const [typeOptions, setTypeOptions] = useState([]);
+  const [fuelTypeOptions, setFuelTypeOptions] = useState([]);
+  const [brandOptions, setBrandOptions] = useState([]);
+  const [colorOptions, setColorOptions] = useState([]);
+  const [transmissionTypeOptions, setTransmissionTypeOptions] = useState([]);
   const [statusOptions, setStatusOptions] = useState([]);
+  const [serviceTypeOptions, setserviceTypeOptions] = useState([]);
+  const [chassisBrandOptions, setChassisBrandOptions] = useState([]); 
 
-  // Efeito para buscar as opções de status
+  const [loading, setLoading] = useState(false);
+  const [feedback, setFeedback] = useState({ isOpen: false, message: '', isError: false });
+
+  // Busca todas as opções para os selects da API
   useEffect(() => {
-    const fetchStatusOptions = async () => {
+    const fetchOptions = async () => {
       try {
-        const response = await api.get('/employees/status'); // Reutilizando endpoint de status
-        setStatusOptions(response.data.value || []);
+        const [
+          typesRes, fuelTypesRes, brandsRes, colorsRes, 
+          transmissionsRes, statusRes, servicesRes,chassisBrandsRes 
+        ] = await Promise.all([
+          api.get('/vehicles/types'),
+          api.get('/vehicles/fuelTypes'),
+          api.get('/vehicles/brands'),
+          api.get('/vehicles/colors'),
+          api.get('/vehicles/transmissionTypes'),
+          api.get('/vehicles/status'),
+          api.get('/vehicles/serviceTypes'),
+          api.get('/vehicles/chassisBrands'),
+        ]);
+        
+        setTypeOptions(typesRes.data.value || []);
+        setFuelTypeOptions(fuelTypesRes.data.value || []);
+        setBrandOptions(brandsRes.data.value || []);
+        setColorOptions(colorsRes.data.value || []);
+        setTransmissionTypeOptions(transmissionsRes.data.value || []);
+        setStatusOptions(statusRes.data.value || []);
+        setserviceTypeOptions(servicesRes.data.value || []);
+        setChassisBrandOptions(chassisBrandsRes.data.value || []); 
+
       } catch (err) {
-        console.error("Erro ao buscar opções de status:", err);
+        console.error("Erro ao carregar opções do formulário:", err.response);
+        setFeedback({ isOpen: true, message: "Não foi possível carregar os dados para o formulário.", isError: true });
       }
     };
-    fetchStatusOptions();
+    fetchOptions();
   }, []);
 
+
+
+
+
+
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    // Lógica para lidar com radio buttons e outros campos
-    const finalValue = type === 'checkbox' || type === 'radio' ? checked : value;
-    setFormData(prevState => ({ ...prevState, [name]: finalValue }));
+    const { name, value, type } = e.target;
+    // Lógica para radio buttons
+    if (type === 'radio') {
+      setFormData(prevState => ({ ...prevState, [name]: value === 'true' }));
+    } else {
+      setFormData(prevState => ({ ...prevState, [name]: value }));
+    }
   };
 
-  const handleSave = (e) => {
+
+
+   const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) {
+      setFormData(prevState => ({ ...prevState, image: null }));
+      return;
+    }
+    // Validações (opcional, mas recomendado)
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      const base64String = reader.result.split(',')[1];
+      setFormData(prevState => ({ ...prevState, image: base64String }));
+    };
+  };
+
+  const handleSave = async (e) => {
     e.preventDefault();
-    console.log("Dados do formulário a serem salvos:", formData);
-    // Aqui viria a lógica de chamada da API
-    alert('Mockup: Dados salvos no console!');
-    navigate('/veiculo'); // Navega de volta para a lista (rota de exemplo)
+    setLoading(true);
+
+    // Converte campos de texto para números onde necessário
+    const payload = {
+      ...formData,
+      type: parseInt(formData.type, 10),
+      numberDoors: parseInt(formData.numberDoors, 10),
+      numberSeats: parseInt(formData.numberSeats, 10),
+      fuelType: parseInt(formData.fuelType, 10),
+      brand: parseInt(formData.brand, 10),
+      year: parseInt(formData.year, 10),
+      color: parseInt(formData.color, 10),
+      axesNumber: parseInt(formData.axesNumber, 10),
+      transmissionType: parseInt(formData.transmissionType, 10),
+      status: parseInt(formData.status, 10),
+      busChassisYear: formData.busChassisYear ? parseInt(formData.busChassisYear, 10) : null,
+      busServiceType: formData.busServiceType ? parseInt(formData.busServiceType, 10) : null,
+    };
+    console.log("payload enviado para api:",JSON.stringify(payload, null, 2));
+
+    
+    try {
+      await api.post('/vehicles', payload);
+      setFeedback({ isOpen: true, message: 'Veículo cadastrado com sucesso!', isError: false });
+    } catch (err) {
+
+      console.error("ERRO AO SALVAR VEÍCULO:", err.response);
+
+      const errorMessage = err.response?.data?.message || 'Erro ao cadastrar o veículo.';
+      setFeedback({ isOpen: true, message: errorMessage, isError: true });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Variável que controla a exibição dos campos de ônibus
-  const showBusFields = formData.tipo === 'onibus' || formData.tipo === 'microonibus';
+  const handleCloseModal = () => {
+    setFeedback({ isOpen: false, message: '', isError: false });
+    if (!feedback.isError) navigate('/veiculo');
+  };
+
+  // Lógica para mostrar campos de ônibus
+  // Assumindo que os tipos de ônibus/micro-ônibus têm IDs 0, 1, 2
+  const showBusFields = ['0', '1', '2'].includes(formData.type);
 
   return (
     <div className={styles.container}>
@@ -82,84 +153,79 @@ function VeiculoCadastro() {
       </div>
       
       <form className={styles.form} onSubmit={handleSave} noValidate>
-        {/* --- SEÇÃO DE CAMPOS GERAIS --- */}
         <h2 className={styles.sectionTitle}>Informações Gerais</h2>
         <div className={styles.formGrid}>
           <div className={styles.inputGroup}>
             <label>Tipo</label>
-            <select name="tipo" value={formData.tipo} onChange={handleChange} required>
+            <select name="type" value={formData.type} onChange={handleChange} required>
               <option value="">Selecione...</option>
-              <option value="onibus">Ônibus</option>
-              <option value="microonibus">Micro-ônibus</option>
-              <option value="carro">Carro</option>
-              <option value="caminhao">Caminhão</option>
+              {typeOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.name}</option>)}
             </select>
           </div>
           <div className={styles.inputGroup}>
             <label>Prefixo</label>
-            <input name="prefixo" type="text" value={formData.prefixo} onChange={handleChange} />
+            <input name="prefix" type="text" value={formData.prefix} onChange={handleChange} />
           </div>
           <div className={styles.inputGroup}>
             <label>Número de Portas</label>
-            <select name="numeroDePortas" value={formData.numeroDePortas} onChange={handleChange}>
-              <option value="">Selecione...</option>
-              <option value="1">1</option><option value="2">2</option><option value="3">3</option>
-              <option value="4">4</option><option value="5">5</option>
-            </select>
+            <input name="numberDoors" type="number" value={formData.numberDoors} onChange={handleChange} />
           </div>
           <div className={styles.inputGroup}>
             <label>Número de Assentos</label>
-            <input name="numeroDeAssentos" type="number" value={formData.numeroDeAssentos} onChange={handleChange} />
+            <input name="numberSeats" type="number" value={formData.numberSeats} onChange={handleChange} />
           </div>
           <div className={styles.inputGroup}>
             <label>Tipo de Combustível</label>
-            <input name="tipoCombustivel" type="text" value={formData.tipoCombustivel} onChange={handleChange} />
-          </div>
-          <div className={styles.inputGroup}>
-            <label>Marca</label>
-            <input name="marca" type="text" value={formData.marca} onChange={handleChange} />
-          </div>
-
-         <div className={styles.inputGroup}>
-            <label>Modelo</label>
-            <input name="modelo" type="text" value={formData.modelo} onChange={handleChange} />
-          </div>
-       
-          <div className={styles.inputGroup}>
-            <label>Ano</label>
-            <input name="ano" type="number" placeholder="YYYY" value={formData.ano} onChange={handleChange} />
-          </div>
-          <div className={styles.inputGroup}>
-            <label>Placa</label>
-            <input name="placa" type="text" value={formData.placa} onChange={handleChange} />
-          </div>
-          <div className={styles.inputGroup}>
-            <label>Cor</label>
-            <input name="cor" type="text" value={formData.cor} onChange={handleChange} />
-          </div>
-          <div className={styles.inputGroup}>
-            <label>Número da Carroceria</label>
-            <input name="numeroCarroceria" type="text" value={formData.numeroCarroceria} onChange={handleChange} />
-          </div>
-          <div className={styles.inputGroup}>
-            <label>Número do Chassi</label>
-            <input name="numeroChassi" type="text" value={formData.numeroChassi} onChange={handleChange} />
-          </div>
-          <div className={styles.inputGroup}>
-            <label>Número de Eixos</label>
-            <select name="numeroDeEixos" value={formData.numeroDeEixos} onChange={handleChange}>
+            <select name="fuelType" value={formData.fuelType} onChange={handleChange}>
               <option value="">Selecione...</option>
-              <option value="1">1</option><option value="2">2</option><option value="3">3</option>
-              <option value="4">4</option><option value="5">5</option>
+              {fuelTypeOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.name}</option>)}
             </select>
           </div>
           <div className={styles.inputGroup}>
+            <label>Marca</label>
+            <select name="brand" value={formData.brand} onChange={handleChange}>
+              <option value="">Selecione...</option>
+              {brandOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.name}</option>)}
+            </select>
+          </div>
+          <div className={styles.inputGroup}>
+            <label>Modelo</label>
+            <input name="model" type="text" value={formData.model} onChange={handleChange} />
+          </div>
+          <div className={styles.inputGroup}>
+            <label>Ano</label>
+            <input name="year" type="number" placeholder="YYYY" value={formData.year} onChange={handleChange} />
+          </div>
+          <div className={styles.inputGroup}>
+            <label>Placa</label>
+            <input name="plate" type="text" value={formData.plate} onChange={handleChange} />
+          </div>
+          <div className={styles.inputGroup}>
+            <label>Cor</label>
+            <select name="color" value={formData.color} onChange={handleChange}>
+              <option value="">Selecione...</option>
+              {colorOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.name}</option>)}
+            </select>
+          </div>
+          <div className={styles.inputGroup}>
+            <label>Número da Carroceria</label>
+            <input name="bodyworkNumber" type="text" value={formData.bodyworkNumber} onChange={handleChange} />
+          </div>
+          <div className={styles.inputGroup}>
+            <label>Número do Chassi</label>
+            <input name="numberChassis" type="text" value={formData.numberChassis} onChange={handleChange} />
+          </div>
+          <div className={styles.inputGroup}>
+            <label>Número de Eixos</label>
+            <input name="axesNumber" type="number" value={formData.axesNumber} onChange={handleChange} />
+          </div>
+          <div className={styles.inputGroup}>
             <label>Vencimento do IPVA</label>
-            <input name="dataIpvaVencimento" type="date" value={formData.dataIpvaVencimento} onChange={handleChange} min={getTodayDate()} />
+            <input name="ipvaExpiration" type="date" value={formData.ipvaExpiration} onChange={handleChange} min={getTodayDate()} />
           </div>
           <div className={styles.inputGroup}>
             <label>Licenciamento</label>
-            <input name="licenciamentoVeiculo" type="text" value={formData.licenciamentoVeiculo} onChange={handleChange} />
+            <input name="licensing" type="text" value={formData.licensing} onChange={handleChange} />
           </div>
           <div className={styles.inputGroup}>
             <label>Renavam</label>
@@ -167,7 +233,10 @@ function VeiculoCadastro() {
           </div>
           <div className={styles.inputGroup}>
             <label>Tipo de Transmissão</label>
-            <input name="tipoTransmissao" type="text" value={formData.tipoTransmissao} onChange={handleChange} />
+            <select name="transmissionType" value={formData.transmissionType} onChange={handleChange}>
+              <option value="">Selecione...</option>
+              {transmissionTypeOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.name}</option>)}
+            </select>
           </div>
           <div className={styles.inputGroup}>
             <label>Status</label>
@@ -179,10 +248,17 @@ function VeiculoCadastro() {
           <div className={styles.inputGroupRadio}>
             <label>Acessibilidade</label>
             <div>
-              <label><input type="radio" name="acessibilidade" checked={formData.acessibilidade === true} onChange={() => setFormData({...formData, acessibilidade: true})} /> Sim</label>
-              <label><input type="radio" name="acessibilidade" checked={formData.acessibilidade === false} onChange={() => setFormData({...formData, acessibilidade: false})} /> Não</label>
+              <label><input type="radio" name="hasAccessibility" value="true" checked={formData.hasAccessibility === true} onChange={handleChange} /> Sim</label>
+              <label><input type="radio" name="hasAccessibility" value="false" checked={formData.hasAccessibility === false} onChange={handleChange} /> Não</label>
             </div>
           </div>
+          <div>
+           <div className={`${styles.inputGroup} ${styles.fullWidth}`}>
+            <label htmlFor="image">Imagem do Veículo (Opcional)</label>
+            <input name="image" type="file" onChange={handleFileChange} accept="image/png, image/jpeg, image/jpg" />
+          </div>
+        </div>
+
         </div>
 
         {/* --- SEÇÃO CONDICIONAL PARA ÔNIBUS/MICRO-ÔNIBUS --- */}
@@ -192,46 +268,45 @@ function VeiculoCadastro() {
             <div className={styles.formGrid}>
               <div className={styles.inputGroup}>
                 <label>Serviço</label>
-                <select name="servico" value={formData.servico} onChange={handleChange}>
+                <select name="busServiceType" value={formData.busServiceType} onChange={handleChange}>
                   <option value="">Selecione...</option>
-                  <option value="intermunicipal">Intermunicipal</option>
-                  <option value="suburbano">Suburbano</option>
-                  <option value="municipal">Municipal</option>
-                  <option value="seletivo">Seletivo</option>
+                  {serviceTypeOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.name}</option>)}
                 </select>
               </div>
               <div className={styles.inputGroup}>
                 <label>Marca do Chassi</label>
-                <input name="marcaChassi" type="text" value={formData.marcaChassi} onChange={handleChange} />
-              </div>
+                 <select name="busChassisBrand" value={formData.busChassisBrand} onChange={handleChange}>
+                  <option value="">Selecione...</option>
+                  {chassisBrandOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.name}</option>)}
+                </select>   </div>
               <div className={styles.inputGroup}>
                 <label>Modelo do Chassi</label>
-                <input name="modeloChassi" type="text" value={formData.modeloChassi} onChange={handleChange} />
+                <input name="busChassisModel" type="text" value={formData.busChassisModel} onChange={handleChange} />
               </div>
               <div className={styles.inputGroup}>
                 <label>Ano do Chassi</label>
-                <input name="anoChassi" type="number" placeholder="YYYY" value={formData.anoChassi} onChange={handleChange} />
+                <input name="busChassisYear" type="number" placeholder="YYYY" value={formData.busChassisYear} onChange={handleChange} />
               </div>
               <div className={styles.inputGroup}>
                 <label>Vencimento do Seguro</label>
-                <input name="seguroVencimento" type="date" value={formData.seguroVencimento} onChange={handleChange} />
+                <input name="busInsuranceExpiration" type="date" value={formData.busInsuranceExpiration} onChange={handleChange} />
               </div>
               <div className={styles.inputGroup}>
                 <label>Próxima Detetização</label>
-                <input name="detetizacao" type="date" value={formData.detetizacao} onChange={handleChange} />
+                <input name="busFumigateExpiration" type="date" value={formData.busFumigateExpiration} onChange={handleChange} />
               </div>
               <div className={styles.inputGroupRadio}>
                 <label>Piso Baixo</label>
                 <div>
-                  <label><input type="radio" name="pisoBaixo" checked={formData.pisoBaixo === true} onChange={() => setFormData({...formData, pisoBaixo: true})} /> Sim</label>
-                  <label><input type="radio" name="pisoBaixo" checked={formData.pisoBaixo === false} onChange={() => setFormData({...formData, pisoBaixo: false})} /> Não</label>
+                  <label><input type="radio" name="busHasLowFloor" value="true" checked={formData.busHasLowFloor === true} onChange={handleChange} /> Sim</label>
+                  <label><input type="radio" name="busHasLowFloor" value="false" checked={formData.busHasLowFloor === false} onChange={handleChange} /> Não</label>
                 </div>
               </div>
               <div className={styles.inputGroupRadio}>
                 <label>Portas à Esquerda</label>
                 <div>
-                  <label><input type="radio" name="portasEsquerdas" checked={formData.portasEsquerdas === true} onChange={() => setFormData({...formData, portasEsquerdas: true})} /> Sim</label>
-                  <label><input type="radio" name="portasEsquerdas" checked={formData.portasEsquerdas === false} onChange={() => setFormData({...formData, portasEsquerdas: false})} /> Não</label>
+                  <label><input type="radio" name="busHasLeftDoors" value="true" checked={formData.busHasLeftDoors === true} onChange={handleChange} /> Sim</label>
+                  <label><input type="radio" name="busHasLeftDoors" value="false" checked={formData.busHasLeftDoors === false} onChange={handleChange} /> Não</label>
                 </div>
               </div>
             </div>
@@ -239,13 +314,31 @@ function VeiculoCadastro() {
         )}
 
         <div className={styles.actions}>
-          <button type="submit" className={styles.saveButton}>
-            Salvar Veículo
+          <button type="submit" className={styles.saveButton} disabled={loading}>
+            {loading ? 'Salvando...' : 'Salvar Veículo'}
           </button>
         </div>
       </form>
+      <Modal isOpen={feedback.isOpen} onClose={handleCloseModal}>
+  <div className="feedback-modal-content">
+          <h3>{feedback.isError ? 'Ocorreu um Erro' : 'Sucesso!'}</h3>
+          <p>{feedback.message}</p>
+          <button onClick={handleCloseModal} className="feedback-modal-button">Fechar</button>
+        </div>
+      </Modal>
     </div>
   );
 }
 
 export default VeiculoCadastro;
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
