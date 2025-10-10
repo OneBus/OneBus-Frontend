@@ -146,3 +146,72 @@
   margin-top: 0.25rem;
 }
 
+
+/* Estilo para o asterisco e a tooltip de campo obrigatório */
+.requiredTooltip {
+  color: #ef4444; /* Vermelho */
+  margin-left: 4px;
+  cursor: pointer;
+  position: relative;
+}
+
+.requiredTooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-5px); /* Pequeno espaço */
+  
+  background-color: #ef4444; /* Fundo vermelho */
+  color: white;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s, visibility 0.2s;
+  z-index: 10;
+}
+
+.requiredTooltip:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Estilo para o ícone de informação e a tooltip verde */
+.infoTooltip {
+  color: var(--tertiary-green); /* Verde */
+  margin-left: 8px;
+  cursor: pointer;
+  position: relative;
+  display: inline-flex; /* Para alinhar o ícone corretamente */
+  align-items: center;
+}
+
+.infoTooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-5px);
+
+  background-color: var(--tertiary-green); /* Fundo verde */
+  color: white;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s, visibility 0.2s;
+  z-index: 10;
+  width: max-content; /* Permite que a tooltip se ajuste ao texto */
+}
+
+.infoTooltip:hover::after {
+  opacity: 1;
+  visibility: visible;
+}

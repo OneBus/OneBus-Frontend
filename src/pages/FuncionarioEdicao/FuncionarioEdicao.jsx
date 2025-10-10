@@ -5,6 +5,10 @@ import api from '../../services/api';
 import Modal from '../../components/Modal/Modal';
 import { validateCPF, maskCPF, maskPhone, getTodayDate } from '../../utils/validators';
 
+const sizeFile = 5 * 1024 * 1024; // filtra arquivos ate 5MB
+const fileTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/heic']; //strings do tipo mime que armazenam o formato do arquivo
+
+
 function FuncionarioEdicao() {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -123,6 +127,50 @@ function FuncionarioEdicao() {
     setErrors(newErrors);
   };
   
+ const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) {
+      // Se o usuário cancelar, não fazemos nada para manter a imagem antiga
+      return;
+    }
+
+    // Validação de tipo
+    if (!fileTypes.includes(file.type)) {
+      setErrors(prev => ({ ...prev, image: 'Tipo de arquivo inválido. Use PNG, JPG ou HEIC.' }));
+      e.target.value = null; // Limpa o input
+      return;
+    }
+
+    // Validação de tamanho
+    if (file.size > sizeFile ) {
+      setErrors(prev => ({ ...prev, image: 'O arquivo não pode exceder 5MB.' }));
+      e.target.value = null; // Limpa o input
+      return;
+    }
+    
+    // Limpa o erro se a validação passar
+    if (errors.image) {
+      const newErrors = { ...errors };
+      delete newErrors.image;
+      setErrors(newErrors);
+    }
+
+    // Converte o arquivo para Base64 e atualiza o estado
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      const base64String = reader.result.split(',')[1];
+      setFormData(prevState => ({ ...prevState, image: base64String }));
+    };
+    reader.onerror = (error) => {
+      console.error("Erro ao ler o arquivo:", error);
+      setErrors(prev => ({ ...prev, image: 'Erro ao processar a imagem.' }));
+    };
+  };
+
+
+
+
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -238,7 +286,26 @@ function FuncionarioEdicao() {
             <label htmlFor="cnhExpiration">Vencimento CNH <span className={styles.required}>*</span></label>
             <input name="cnhExpiration" type="date" value={formData.cnhExpiration || ''} onChange={handleChange} min={getTodayDate()} required />
           </div>
+      
+            <div className={`${styles.inputGroup} ${styles.fullWidth}`}>
+            <label htmlFor="image">Imagem do Perfil (Opcional)</label>
+            <div className={styles.imageUploadContainer}>
+              <img
+                src={formData.image ? `data:image/png;base64,${formData.image}` : 'https://ui-avatars.com/api/?name=?&background=e2e8f0&color=64748b'}
+                alt="Pré-visualização do perfil"
+                className={styles.imagePreview}
+              />
+              <input 
+                name="image" 
+                type="file" 
+                onChange={handleFileChange} 
+                accept="image/png, image/jpeg, image/jpg, image/heic"
+              />
+            </div>
+            {errors.image && <small className={styles.errorText}>{errors.image}</small>}
+          </div>
         </div>
+
         
         <div className={styles.actions}>
           <button type="submit" className={styles.saveButton} disabled={!isFormValid || loading}>

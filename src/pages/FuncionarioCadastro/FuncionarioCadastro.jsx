@@ -17,8 +17,7 @@ function FuncionarioCadastro() {
   // Nomes dos campos alinhados com a API (camelCase em inglês)
   const [formData, setFormData] = useState({
     name: '', rg: '', cpf: '', bloodType: '', code: '', role: '',
-    email: '', phone: '', hiringDate: '', cnhNumber: '',  cnhExpiration: '', status: '', image: null,
-    password: '', //tira isto
+    email: '', phone: '', hiringDate: '', cnhNumber: '',  cnhExpiration: '', status: '', image: null, //tira isto
   });
   
   //declara estados para cada enum(select) que será populado pela api

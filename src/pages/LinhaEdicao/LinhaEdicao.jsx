@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import styles from './LinhaEdicao.module.css';
 import api from '../../services/api';
 import Modal from '../../components/Modal/Modal';
+import { FaInfoCircle } from 'react-icons/fa';
 
 function LinhaEdicao() {
   const navigate = useNavigate();
@@ -16,6 +17,18 @@ function LinhaEdicao() {
 
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState({ isOpen: false, message: '', isError: false });
+
+const RequiredIndicator = () => (
+  <span className={styles.requiredTooltip} data-tooltip="Campo obrigatório">
+    *
+  </span>
+);
+const InfoTooltip = ({ text }) => (
+  <span className={styles.infoTooltip} data-tooltip={text}>
+ ⓘ
+  </span>
+);
+
 
   // Busca os dados da linha e as opções para os menus
   useEffect(() => {
@@ -94,30 +107,32 @@ function LinhaEdicao() {
       <form className={styles.form} onSubmit={handleUpdate} noValidate>
         <div className={styles.formGrid}>
           <div className={styles.inputGroup}>
-            <label htmlFor="number">Número da Linha</label>
+            <label htmlFor="number">Número da Linha <RequiredIndicator /></label>
             <input name="number" id="number" type="text" value={formData.number || ''} onChange={handleChange} required />
           </div>
           <div className={styles.inputGroup}>
-            <label htmlFor="name">Nome da Linha</label>
+            <label htmlFor="name">Nome da Linha <RequiredIndicator /></label>
             <input name="name" id="name" type="text" value={formData.name || ''} onChange={handleChange} required />
           </div>
           <div className={styles.inputGroup}>
-            <label htmlFor="type">Tipo</label>
+            <label htmlFor="type">Tipo <RequiredIndicator /></label>
             <select name="type" id="type" value={formData.type ?? ''} onChange={handleChange} required>
               <option value="">Selecione...</option>
               {typeOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.name}</option>)}
             </select>
           </div>
           <div className={styles.inputGroup}>
-            <label htmlFor="travelTime">Tempo de Viagem</label>
+            <label htmlFor="travelTime">Tempo de Viagem <RequiredIndicator />
+             <InfoTooltip text="Tempo de viagem dado em horas. Ex: 01:30 (1 hora e meia)" />
+            </label>
             <input name="travelTime" id="travelTime" type="time" value={formData.travelTime || ''} onChange={handleChange} />
           </div>
           <div className={styles.inputGroup}>
-            <label htmlFor="mileage">Quilometragem (KM)</label>
+            <label htmlFor="mileage">Quilometragem (KM) <RequiredIndicator /></label>
             <input name="mileage" id="mileage" type="number" step="0.1" value={formData.mileage || ''} onChange={handleChange} />
           </div>
           <div className={styles.inputGroup}>
-            <label htmlFor="directionType">Sentido</label>
+            <label htmlFor="directionType">Sentido <RequiredIndicator /></label>
             <select name="directionType" id="directionType" value={formData.directionType ?? ''} onChange={handleChange} required>
               <option value="">Selecione...</option>
               {directionTypeOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.name}</option>)}
