@@ -75,17 +75,9 @@ function FuncionarioCadastro() {
 
     // 3. Adiciona campos de CNH se necessário
     if (isCnhRequired) {
-      requiredFields.push('cnhNumber', 'cnhCategory', 'cnhExpiration');
+      requiredFields.push('cnhNumber', 'cnhExpiration');
     }
-
-
-
-
-
-
-
-
-
+    // Verifica se todos os campos obrigatórios estão preenchidos e se não há erros
     const allRequiredFilled = requiredFields.every(field => formData[field] !== '');
     const noErrors = Object.keys(errors).length === 0;
     
@@ -110,6 +102,10 @@ function FuncionarioCadastro() {
       const upperValue = value.toUpperCase();
       finalValue = upperValue.replace(/[^0-9X]/g, '').replace(/X(.)+/g, 'X').substring(0, 9);
     }
+      else if (name === 'cnhNumber') {
+      // Permite apenas números
+      finalValue = value.replace(/\D/g, '');
+    }
     
     setFormData(prevState => ({ ...prevState, [name]: finalValue }));
 
@@ -124,9 +120,21 @@ function FuncionarioCadastro() {
 
   const handleBlur = (e) => {
     const { name, value } = e.target;
-    if (name === 'cpf' && value && !validateCPF(value)) {
-      setErrors(prev => ({ ...prev, cpf: 'CPF inválido.' }));
+    const newErrors = { ...errors };
+
+ if (name === 'cpf') {
+      if (value && !validateCPF(value)) newErrors.cpf = 'CPF inválido.';
+      else delete newErrors.cpf;
     }
+    if (name === 'rg') {
+      if (value && value.length !== 11) newErrors.rg = 'O RG deve conter 11 caracteres.';
+      else delete newErrors.rg;
+    }
+    if (name === 'cnhNumber') {
+      if (value && value.length !== 11) newErrors.cnhNumber = 'A CNH deve conter 11 dígitos.';
+      else delete newErrors.cnhNumber;
+    }
+    setErrors(newErrors);
   };
 
   //metodo para validação de tamanho e tipo do arquivo
@@ -199,47 +207,7 @@ function FuncionarioCadastro() {
       setLoading(false);
     }
   };
-    // Mapeia os dados do formulário para o formato PascalCase que a API espera
-   //onst employeeData = {
-     //ome: formData.name,
-    //  Rg: formData.rg,
-      //Cpf: formData.cpf.replace(/[^\d]/g, ''),
-     // TipoSanguineo: parseInt(formData.bloodType, 10),
-     // Matrícula: formData.code,
-     // Cargo: parseInt(formData.role, 10),
-     // Email: formData.email,
-    /// Telefone: formData.phone.replace(/[^\d]/g, ''),
-    //  DataContratacao: formData.hiringDate || null,
-    //  NumeroCnh: formData.cnhNumber,
-      //CategoriaCnh: formData.cnhCategory ? parseInt(formData.cnhCategory, 10) : null,
-     // DataVencimentoCnh: formData.cnhExpiration,
-     // Status: parseInt(formData.status, 10),
-     // Imagem: formData.image,
-     // Password: formData.password,
-    //};
-
-   // if (!employeeData.Email) delete employeeData.Email;
-    //if (!employeeData.DataContratacao) delete employeeData.DataContratacao;
-//
-   // try {
-     
-     // await api.post('/employees');
-    //  setFeedback({ isOpen: true, message: 'Funcionário cadastrado com sucesso!', isError: false });
-   // } catch (err) {
-    //  const errorMessages = err.response?.data?.errors;
-    //  let detailedMessage = 'Erro ao cadastrar funcionário.';
-      
-    //  if (errorMessages && Array.isArray(errorMessages)) {
-    //    detailedMessage = errorMessages[0].message;
-     // } else if (errorMessages) {
-    //    detailedMessage = Object.values(errorMessages)[0][0];
-     // }
-      
-    //  setFeedback({ isOpen: true, message: detailedMessage, isError: true });
-   // } finally {
-   //   setLoading(false);
-   // }
-//  };]
+    
 
 
   const handleCloseModal = () => {
@@ -247,54 +215,6 @@ function FuncionarioCadastro() {
     if (!feedback.isError) navigate('/funcionario');
   };
 
-   // Mapeia os dados do formulário para o formato PascalCase que a API espera
-   //onst employeeData = {
-     //ome: formData.name,
-    //  Rg: formData.rg,
-      //Cpf: formData.cpf.replace(/[^\d]/g, ''),
-     // TipoSanguineo: parseInt(formData.bloodType, 10),
-     // Matrícula: formData.code,
-     // Cargo: parseInt(formData.role, 10),
-     // Email: formData.email,
-    /// Telefone: formData.phone.replace(/[^\d]/g, ''),
-    //  DataContratacao: formData.hiringDate || null,
-    //  NumeroCnh: formData.cnhNumber,
-      //CategoriaCnh: formData.cnhCategory ? parseInt(formData.cnhCategory, 10) : null,
-     // DataVencimentoCnh: formData.cnhExpiration,
-     // Status: parseInt(formData.status, 10),
-     // Imagem: formData.image,
-     // Password: formData.password,
-    //};
-
-
-    
-    //   // if (!employeeData.Email) delete employeeData.Email;
-    //if (!employeeData.DataContratacao) delete employeeData.DataContratacao;
-//
-   // try {
-     
-     // await api.post('/employees');
-    //  setFeedback({ isOpen: true, message: 'Funcionário cadastrado com sucesso!', isError: false });
-   // } catch (err) {
-    //  const errorMessages = err.response?.data?.errors;
-    //  let detailedMessage = 'Erro ao cadastrar funcionário.';
-      
-    //  if (errorMessages && Array.isArray(errorMessages)) {
-    //    detailedMessage = errorMessages[0].message;
-     // } else if (errorMessages) {
-    //    detailedMessage = Object.values(errorMessages)[0][0];
-     // }
-      
-    //  setFeedback({ isOpen: true, message: detailedMessage, isError: true });
-   // } finally {
-   //   setLoading(false);
-   // }
-//  };]
-
-
-
-  //button salvar
-  //disabled={!isFormValid || loading}
   return (
     <div className={styles.container}>
       <div className={styles.header}>

@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import styles from '../FuncionarioCadastro/FuncionarioCadastro.module.css'; // Reutilizando os estilos
 import api from '../../services/api';
 import Modal from '../../components/Modal/Modal';
-import { maskCPF, maskPhone } from '../../utils/validators';
+import { validateCPF, maskCPF, maskPhone, getTodayDate } from '../../utils/validators';
 
 function FuncionarioEdicao() {
   const navigate = useNavigate();
@@ -15,9 +15,10 @@ function FuncionarioEdicao() {
   const [statusOptions, setStatusOptions] = useState([]);
   const [bloodTypeOptions, setBloodTypeOptions] = useState([]);
   
-
+  const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState({ isOpen: false, message: '', isError: false });
+  const [isFormValid, setIsFormValid] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,10 +35,6 @@ function FuncionarioEdicao() {
         setStatusOptions(statusRes.data.value || []);
         setBloodTypeOptions(bloodTypesRes.data.value || []);
      
-        
-
-
-
      let employeeData = employeeRes.data.value;
         
         // ▼▼▼ CORREÇÃO APLICADA AQUI ▼▼▼
@@ -47,10 +44,9 @@ function FuncionarioEdicao() {
           status: employeeData.status.toString(),
           role: employeeData.role.toString(),
           bloodType: employeeData.bloodType.toString(),
-        
           hiringDate: employeeData.hiringDate ? employeeData.hiringDate.split('T')[0] : '',
           cnhExpiration: employeeData.cnhExpiration ? employeeData.cnhExpiration.split('T')[0] : '',
-        }
+        };
 
         //const employeeData = employeeRes.data.value;
       //  if (employeeData.hiringDate) employeeData.hiringDate = employeeData.hiringDate.split('T')[0];
@@ -66,16 +62,74 @@ function FuncionarioEdicao() {
     fetchData();
   }, [id]);
 
+
+   useEffect(() => {
+    let requiredFields = [
+      'name', 'rg', 'cpf', 'bloodType', 'code', 'role',
+      'phone', 'status', 'email', 'hiringDate', 'cnhExpiration'
+    ];
+
+    const roleId = formData.role;
+    const isCnhRequired = !['0', '1'].includes(roleId);
+
+    if (isCnhRequired) {
+      requiredFields.push('cnhNumber');
+    }
+
+    const allRequiredFilled = requiredFields.every(field => formData[field] && formData[field].toString().trim() !== '');
+    const noErrors = Object.keys(errors).length === 0;
+    
+    setIsFormValid(allRequiredFilled && noErrors);
+  }, [formData, errors]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     let finalValue = value;
     if (name === 'cpf') finalValue = maskCPF(value);
-    if (name === 'phone') finalValue = maskPhone(value);
+    else if (name === 'phone') finalValue = maskPhone(value);
+     else if (name === 'rg') {
+      const upperValue = value.toUpperCase();
+      finalValue = upperValue.replace(/[^0-9X]/g, '').replace(/X(.)+/g, 'X');
+    }
+    else if (name === 'cnhNumber') {
+      finalValue = value.replace(/\D/g, '');
+    }
     setFormData(prevState => ({ ...prevState, [name]: finalValue }));
+  if (errors[name]) {
+      const newErrors = { ...errors };
+      delete newErrors[name];
+      setErrors(newErrors);
+    }
+ 
   };
+
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    const newErrors = { ...errors };
+
+    if (name === 'cpf') {
+      if (value && !validateCPF(value)) newErrors.cpf = 'CPF inválido.';
+      else delete newErrors.cpf;
+    }
+    if (name === 'rg') {
+      if (value && value.length !== 11) newErrors.rg = 'O RG deve conter 11 caracteres.';
+      else delete newErrors.rg;
+    }
+    if (name === 'cnhNumber') {
+      if (value && value.length !== 11) newErrors.cnhNumber = 'A CNH deve conter 11 dígitos.';
+      else delete newErrors.cnhNumber;
+    }
+    setErrors(newErrors);
+  };
+  
 
   const handleUpdate = async (e) => {
     e.preventDefault();
+    if (!isFormValid) {
+      setFeedback({ isOpen: true, message: 'Verifique os campos obrigatórios e os erros de validação.', isError: true });
+      return;
+    }
     setLoading(true);
     
     const updatePayload = {
@@ -114,7 +168,7 @@ function FuncionarioEdicao() {
   if (loading) return <p className={styles.container}>Carregando dados do funcionário...</p>;
 
   return (
-    <div className={styles.container}>
+     <div className={styles.container}>
       <div className={styles.header}>
         <h1>Editar Funcionário: {formData.name}</h1>
         <button onClick={() => navigate('/funcionario')} className={styles.backButton}>
@@ -122,74 +176,72 @@ function FuncionarioEdicao() {
         </button>
       </div>
       
-      <form className={styles.form} onSubmit={handleUpdate}>
+      <form className={styles.form} onSubmit={handleUpdate} noValidate>
         <div className={styles.formGrid}>
-          {/* --- Campos do Formulário --- */}
           <div className={styles.inputGroup}>
-            <label htmlFor="name">Nome</label>
+            <label htmlFor="name">Nome <span className={styles.required}>*</span></label>
             <input name="name" type="text" value={formData.name || ''} onChange={handleChange} required />
           </div>
           <div className={styles.inputGroup}>
-            <label htmlFor="rg">RG</label>
-            <input name="rg" type="text" value={formData.rg || ''} onChange={handleChange} required />
+            <label htmlFor="rg">RG <span className={styles.required}>*</span></label>
+            <input name="rg" type="text" value={formData.rg || ''} onChange={handleChange} onBlur={handleBlur} maxLength="11" required />
+            {errors.rg && <small className={styles.errorText}>{errors.rg}</small>}
           </div>
           <div className={styles.inputGroup}>
-            <label htmlFor="cpf">CPF</label>
-            <input name="cpf" type="text" value={formData.cpf || ''} onChange={handleChange} required />
+            <label htmlFor="cpf">CPF <span className={styles.required}>*</span></label>
+            <input name="cpf" type="text" value={formData.cpf || ''} onChange={handleChange} onBlur={handleBlur} required />
+            {errors.cpf && <small className={styles.errorText}>{errors.cpf}</small>}
           </div>
           <div className={styles.inputGroup}>
-            <label htmlFor="bloodType">Tipo Sanguíneo</label>
-            {/* CORREÇÃO APLICADA AQUI */}
-            <select name="bloodType" value={formData.bloodType || ''} onChange={handleChange} required>
+            <label htmlFor="bloodType">Tipo Sanguíneo <span className={styles.required}>*</span></label>
+            <select name="bloodType" value={formData.bloodType ?? ''} onChange={handleChange} required>
               <option value="">Selecione...</option>
               {bloodTypeOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.name}</option>)}
             </select>
           </div>
           <div className={styles.inputGroup}>
-            <label htmlFor="code">Matrícula (Código)</label>
+            <label htmlFor="code">Matrícula (Código) <span className={styles.required}>*</span></label>
             <input name="code" type="text" value={formData.code || ''} onChange={handleChange} required />
           </div>
           <div className={styles.inputGroup}>
-            <label htmlFor="role">Cargo</label>
-            {/* CORREÇÃO APLICADA AQUI */}
-            <select name="role" value={formData.role || ''} onChange={handleChange} required>
+            <label htmlFor="role">Cargo <span className={styles.required}>*</span></label>
+            <select name="role" value={formData.role ?? ''} onChange={handleChange} required>
                 <option value="">Selecione...</option>
                 {roleOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.name}</option>)}
             </select>
           </div>
           <div className={styles.inputGroup}>
-            <label htmlFor="status">Status</label>
-            {/* CORREÇÃO APLICADA AQUI */}
-             <select name="status" value={formData.status || ''} onChange={handleChange} required>
+            <label htmlFor="status">Status <span className={styles.required}>*</span></label>
+             <select name="status" value={formData.status ?? ''} onChange={handleChange} required>
                 <option value="">Selecione...</option>
                 {statusOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.name}</option>)}
             </select>
           </div>
           <div className={styles.inputGroup}>
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email">Email <span className={styles.required}>*</span></label>
             <input name="email" type="email" value={formData.email || ''} onChange={handleChange} required />
           </div>
           <div className={styles.inputGroup}>
-            <label htmlFor="phone">Telefone</label>
+            <label htmlFor="phone">Telefone <span className={styles.required}>*</span></label>
             <input name="phone" type="text" value={formData.phone || ''} onChange={handleChange} required />
           </div>
           <div className={styles.inputGroup}>
-            <label htmlFor="hiringDate">Data da Contratação</label>
-            <input name="hiringDate" type="date" value={formData.hiringDate || ''} onChange={handleChange} />
+            <label htmlFor="hiringDate">Data da Contratação <span className={styles.required}>*</span></label>
+            <input name="hiringDate" type="date" value={formData.hiringDate || ''} onChange={handleChange} max={getTodayDate()} required />
           </div>
           <div className={styles.inputGroup}>
             <label htmlFor="cnhNumber">Número da CNH</label>
-            <input name="cnhNumber" type="text" value={formData.cnhNumber || ''} onChange={handleChange} required />
+            <input name="cnhNumber" type="text" value={formData.cnhNumber || ''} onChange={handleChange} onBlur={handleBlur} maxLength="11" />
+            {errors.cnhNumber && <small className={styles.errorText}>{errors.cnhNumber}</small>}
           </div>
-          
           <div className={styles.inputGroup}>
-            <label htmlFor="cnhExpiration">Vencimento CNH</label>
-            <input name="cnhExpiration" type="date" value={formData.cnhExpiration || ''} onChange={handleChange} required />
+            <label htmlFor="cnhExpiration">Vencimento CNH <span className={styles.required}>*</span></label>
+            <input name="cnhExpiration" type="date" value={formData.cnhExpiration || ''} onChange={handleChange} min={getTodayDate()} required />
           </div>
         </div>
         
         <div className={styles.actions}>
-          <button type="submit" className={styles.saveButton} disabled={loading}>
+          <button type="submit" className={styles.saveButton} disabled={!isFormValid || loading}>
             {loading ? 'Salvando...' : 'Salvar Alterações'}
           </button>
         </div>

@@ -116,7 +116,7 @@ function LinhaCadastro() {
           </div>
           <div className={styles.inputGroup}>
             <label htmlFor="mileage">Quilometragem (KM)</label>
-            <input name="mileage" id="mileage" type="number" step="0.1" placeholder="Ex: 25.5" value={formData.mileage} onChange={handleChange} />
+            <input name="mileage" id="mileage" type="number" step="1.0" placeholder="Ex: 25.5" value={formData.mileage} onChange={handleChange} />
           </div>
           <div className={styles.inputGroup}>
             <label htmlFor="directionType">Sentido</label>
