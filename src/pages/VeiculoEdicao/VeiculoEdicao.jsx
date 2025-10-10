@@ -24,6 +24,18 @@ function VeiculoEdicao() {
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState({ isOpen: false, message: '', isError: false });
 
+const RequiredIndicator = () => (
+  <span className={styles.requiredTooltip} data-tooltip="Campo obrigatório">
+    *
+  </span>
+);
+const InfoTooltip = ({ text }) => (
+  <span className={styles.infoTooltip} data-tooltip={text}>
+  ⓘ
+  </span>
+);
+
+
   // Busca todos os dados necessários (do veículo e dos selects)
   useEffect(() => {
     const fetchData = async () => {
@@ -140,7 +152,7 @@ function VeiculoEdicao() {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1>Editar Veículo: {formData.plate}</h1>
+        <h1>Editar Veículo: {formData.prefix}</h1>
         <button onClick={() => navigate('/veiculo')} className={styles.backButton}>
           Voltar para a Lista
         </button>
@@ -150,97 +162,100 @@ function VeiculoEdicao() {
         <h2 className={styles.sectionTitle}>Informações Gerais</h2>
         <div className={styles.formGrid}>
           <div className={styles.inputGroup}>
-            <label>Tipo</label>
+            <label>Tipo<RequiredIndicator /></label>
             <select name="type" value={formData.type} onChange={handleChange} required>
               <option value="">Selecione...</option>
               {typeOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.name}</option>)}
             </select>
           </div>
           <div className={styles.inputGroup}>
-            <label>Prefixo</label>
+            <label>Prefixo<RequiredIndicator /></label>
             <input name="prefix" type="text" value={formData.prefix} onChange={handleChange} />
           </div>
           <div className={styles.inputGroup}>
-            <label>Número de Portas</label>
+            <label>Número de Portas<RequiredIndicator /></label>
             <input name="numberDoors" type="number" value={formData.numberDoors} onChange={handleChange} />
           </div>
           <div className={styles.inputGroup}>
-            <label>Número de Assentos</label>
+            <label>Número de Assentos<RequiredIndicator /></label>
             <input name="numberSeats" type="number" value={formData.numberSeats} onChange={handleChange} />
           </div>
           <div className={styles.inputGroup}>
-            <label>Tipo de Combustível</label>
+            <label>Tipo de Combustível<RequiredIndicator /></label>
             <select name="fuelType" value={formData.fuelType} onChange={handleChange}>
               <option value="">Selecione...</option>
               {fuelTypeOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.name}</option>)}
             </select>
           </div>
           <div className={styles.inputGroup}>
-            <label>Marca</label>
+            <label>Marca<RequiredIndicator /></label>
             <select name="brand" value={formData.brand} onChange={handleChange}>
               <option value="">Selecione...</option>
               {brandOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.name}</option>)}
             </select>
           </div>
           <div className={styles.inputGroup}>
-            <label>Modelo</label>
+            <label>Modelo<RequiredIndicator /></label>
             <input name="model" type="text" value={formData.model} onChange={handleChange} />
           </div>
           <div className={styles.inputGroup}>
-            <label>Ano</label>
+            <label>Ano<RequiredIndicator /></label>
             <input name="year" type="number" placeholder="YYYY" value={formData.year} onChange={handleChange} />
           </div>
           <div className={styles.inputGroup}>
-            <label>Placa</label>
+            <label>Placa<RequiredIndicator /></label>
             <input name="plate" type="text" value={formData.plate} onChange={handleChange} />
           </div>
           <div className={styles.inputGroup}>
-            <label>Cor</label>
+            <label>Cor<RequiredIndicator /></label>
             <select name="color" value={formData.color} onChange={handleChange}>
               <option value="">Selecione...</option>
               {colorOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.name}</option>)}
             </select>
           </div>
           <div className={styles.inputGroup}>
-            <label>Número da Carroceria</label>
+            <label>Número da Carroceria<RequiredIndicator />
+             <InfoTooltip text="Tempo de viagem dado em horas. Ex: 01:30 (1 hora e meia)" />
+             </label>
             <input name="bodyworkNumber" type="text" value={formData.bodyworkNumber} onChange={handleChange} />
           </div>
           <div className={styles.inputGroup}>
-            <label>Número do Chassi</label>
+            <label>Número do Chassi<RequiredIndicator />
+             <InfoTooltip text="Numero presente na placa..." /></label>
             <input name="numberChassis" type="text" value={formData.numberChassis} onChange={handleChange} />
           </div>
           <div className={styles.inputGroup}>
-            <label>Número de Eixos</label>
+            <label>Número de Eixos<RequiredIndicator /></label>
             <input name="axesNumber" type="number" value={formData.axesNumber} onChange={handleChange} />
           </div>
           <div className={styles.inputGroup}>
-            <label>Vencimento do IPVA</label>
+            <label>Vencimento do IPVA<RequiredIndicator /></label>
             <input name="ipvaExpiration" type="date" value={formData.ipvaExpiration} onChange={handleChange} min={getTodayDate()} />
           </div>
           <div className={styles.inputGroup}>
-            <label>Licenciamento</label>
+            <label>Licenciamento<RequiredIndicator /></label>
             <input name="licensing" type="text" value={formData.licensing} onChange={handleChange} />
           </div>
           <div className={styles.inputGroup}>
-            <label>Renavam</label>
+            <label>Renavam<RequiredIndicator /></label>
             <input name="renavam" type="text" value={formData.renavam} onChange={handleChange} />
           </div>
           <div className={styles.inputGroup}>
-            <label>Tipo de Transmissão</label>
+            <label>Tipo de Transmissão<RequiredIndicator /></label>
             <select name="transmissionType" value={formData.transmissionType} onChange={handleChange}>
               <option value="">Selecione...</option>
               {transmissionTypeOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.name}</option>)}
             </select>
           </div>
           <div className={styles.inputGroup}>
-            <label>Status</label>
+            <label>Status<RequiredIndicator /></label>
             <select name="status" value={formData.status} onChange={handleChange}>
                 <option value="">Selecione...</option>
                 {statusOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.name}</option>)}
             </select>
           </div>
           <div className={styles.inputGroupRadio}>
-            <label>Acessibilidade</label>
+            <label>Acessibilidade<RequiredIndicator /></label>
             <div>
               <label><input type="radio" name="hasAccessibility" value="true" checked={formData.hasAccessibility === true} onChange={handleChange} /> Sim</label>
               <label><input type="radio" name="hasAccessibility" value="false" checked={formData.hasAccessibility === false} onChange={handleChange} /> Não</label>
@@ -261,24 +276,24 @@ function VeiculoEdicao() {
             <h2 className={styles.sectionTitle}>Informações Específicas de Ônibus</h2>
             <div className={styles.formGrid}>
               <div className={styles.inputGroup}>
-                <label>Serviço</label>
+                <label>Serviço<RequiredIndicator /></label>
                 <select name="busServiceType" value={formData.busServiceType} onChange={handleChange}>
                   <option value="">Selecione...</option>
                   {ServiceTypeOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.name}</option>)}
                 </select>
               </div>
               <div className={styles.inputGroup}>
-                <label>Marca do Chassi</label>
+                <label>Marca do Chassi<RequiredIndicator /></label>
                  <select name="busChassisBrand" value={formData.busChassisBrand} onChange={handleChange}>
                   <option value="">Selecione...</option>
                   {chassisBrandOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.name}</option>)}
                 </select>   </div>
               <div className={styles.inputGroup}>
-                <label>Modelo do Chassi</label>
+                <label>Modelo do Chassi<RequiredIndicator /></label>
                 <input name="busChassisModel" type="text" value={formData.busChassisModel} onChange={handleChange} />
               </div>
               <div className={styles.inputGroup}>
-                <label>Ano do Chassi</label>
+                <label>Ano do Chassi<RequiredIndicator /></label>
                 <input name="busChassisYear" type="number" placeholder="YYYY" value={formData.busChassisYear} onChange={handleChange} />
               </div>
               <div className={styles.inputGroup}>
@@ -290,14 +305,14 @@ function VeiculoEdicao() {
                 <input name="busFumigateExpiration" type="date" value={formData.busFumigateExpiration} onChange={handleChange} />
               </div>
               <div className={styles.inputGroupRadio}>
-                <label>Piso Baixo</label>
+                <label>Piso Baixo<RequiredIndicator /></label>
                 <div>
                   <label><input type="radio" name="busHasLowFloor" value="true" checked={formData.busHasLowFloor === true} onChange={handleChange} /> Sim</label>
                   <label><input type="radio" name="busHasLowFloor" value="false" checked={formData.busHasLowFloor === false} onChange={handleChange} /> Não</label>
                 </div>
               </div>
               <div className={styles.inputGroupRadio}>
-                <label>Portas à Esquerda</label>
+                <label>Portas à Esquerda<RequiredIndicator /></label>
                 <div>
                   <label><input type="radio" name="busHasLeftDoors" value="true" checked={formData.busHasLeftDoors === true} onChange={handleChange} /> Sim</label>
                   <label><input type="radio" name="busHasLeftDoors" value="false" checked={formData.busHasLeftDoors === false} onChange={handleChange} /> Não</label>
