@@ -70,7 +70,7 @@ function FuncionarioEdicao() {
     ];
 
     const roleId = formData.role;
-    const isCnhRequired = !['0', '1'].includes(roleId);
+    const isCnhRequired = !['0', '1','2'].includes(roleId);
 
     if (isCnhRequired) {
       requiredFields.push('cnhNumber');
@@ -113,7 +113,7 @@ function FuncionarioEdicao() {
       else delete newErrors.cpf;
     }
     if (name === 'rg') {
-      if (value && value.length !== 11) newErrors.rg = 'O RG deve conter 11 caracteres.';
+      if (value && value.length !== 9) newErrors.rg = 'O RG deve conter 9 caracteres.';
       else delete newErrors.rg;
     }
     if (name === 'cnhNumber') {

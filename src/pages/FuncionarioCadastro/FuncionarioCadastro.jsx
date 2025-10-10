@@ -18,7 +18,7 @@ function FuncionarioCadastro() {
   const [formData, setFormData] = useState({
     name: '', rg: '', cpf: '', bloodType: '', code: '', role: '',
     email: '', phone: '', hiringDate: '', cnhNumber: '',  cnhExpiration: '', status: '', image: null,
-    password: '',
+    password: '', //tira isto
   });
   
   //declara estados para cada enum(select) que será populado pela api
@@ -71,14 +71,14 @@ function FuncionarioCadastro() {
  // 2. Verifica se a CNH é obrigatória
     // IMPORTANTE: Confirme se os IDs para Fiscal e Supervisor são '0' e '1' na sua API.
     const roleId = formData.role;
-    const isCnhRequired = !['0', '1'].includes(roleId);
+    const isCnhRequired = !['0', '1','2'].includes(roleId);
 
     // 3. Adiciona campos de CNH se necessário
     if (isCnhRequired) {
       requiredFields.push('cnhNumber', 'cnhExpiration');
     }
     // Verifica se todos os campos obrigatórios estão preenchidos e se não há erros
-    const allRequiredFilled = requiredFields.every(field => formData[field] !== '');
+    const allRequiredFilled = requiredFields.every(field => formData[field] && formData[field].toString().trim() !== '');
     const noErrors = Object.keys(errors).length === 0;
     
     setIsFormValid(allRequiredFilled && noErrors);
@@ -86,7 +86,7 @@ function FuncionarioCadastro() {
 
   //validação de rg, cpf, telefone e mascara de cpf e telefone
    const handleChange = (e) => {
-    const { name, value } = e.target;
+   const { name, value } = e.target;
 
 // Log para vermos o que está acontecendo
     console.log(`--- CAMPO ALTERADO ---`);
@@ -127,7 +127,7 @@ function FuncionarioCadastro() {
       else delete newErrors.cpf;
     }
     if (name === 'rg') {
-      if (value && value.length !== 11) newErrors.rg = 'O RG deve conter 11 caracteres.';
+      if (value && value.length !== 9) newErrors.rg = 'O RG deve conter 9 caracteres.';
       else delete newErrors.rg;
     }
     if (name === 'cnhNumber') {
@@ -216,21 +216,22 @@ function FuncionarioCadastro() {
   };
 
   return (
-    <div className={styles.container}>
+  <div className={styles.container}>
       <div className={styles.header}>
         <h1>Cadastrar Novo Funcionário</h1>
         <button onClick={() => navigate('/funcionario')} className={styles.backButton}>Voltar</button>
       </div>
       
-      <form className={styles.form} onSubmit={handleSave}>
+      <form className={styles.form} onSubmit={handleSave} noValidate>
         <div className={styles.formGrid}>
           <div className={styles.inputGroup}>
             <label htmlFor="name">Nome <span className={styles.required}>*</span></label>
-            <input name="name" type="text" value={formData.name} onChange={handleChange} maxLength="64" required />
+            <input name="name" type="text" value={formData.name} onChange={handleChange} required />
           </div>
           <div className={styles.inputGroup}>
             <label htmlFor="rg">RG <span className={styles.required}>*</span></label>
-            <input name="rg" type="text" value={formData.rg} onChange={handleChange} maxLength="9" required />
+            <input name="rg" type="text" value={formData.rg} onChange={handleChange} onBlur={handleBlur} maxLength="11" required />
+            {errors.rg && <small className={styles.errorText}>{errors.rg}</small>}
           </div>
           <div className={styles.inputGroup}>
             <label htmlFor="cpf">CPF <span className={styles.required}>*</span></label>
@@ -276,21 +277,20 @@ function FuncionarioCadastro() {
             <label htmlFor="phone">Telefone <span className={styles.required}>*</span></label>
             <input name="phone" type="text" value={formData.phone} onChange={handleChange} required />
           </div>
-          <div className={styles.inputGroup}>
-            <label htmlFor="hiringDate">Data da Contratação</label>
-            <input name="hiringDate" type="date" value={formData.hiringDate} onChange={handleChange} max={getTodayDate()}  />
+            <div className={styles.inputGroup}>
+            <label htmlFor="hiringDate">Data da Contratação <span className={styles.required}>*</span></label>
+            <input name="hiringDate" type="date" value={formData.hiringDate} onChange={handleChange} max={getTodayDate()} required />
           </div>
           <div className={styles.inputGroup}>
-            <label htmlFor="cnhNumber">Número da CNH <span className={styles.required}>*</span></label>
-            <input name="cnhNumber" type="text" value={formData.cnhNumber} onChange={handleChange} maxLength="11" required />
+            <label htmlFor="cnhNumber">Número da CNH</label>
+            <input name="cnhNumber" type="text" value={formData.cnhNumber} onChange={handleChange} onBlur={handleBlur} maxLength="11" />
+            {errors.cnhNumber && <small className={styles.errorText}>{errors.cnhNumber}</small>}
           </div>
-         
-
-        
           <div className={styles.inputGroup}>
             <label htmlFor="cnhExpiration">Vencimento CNH <span className={styles.required}>*</span></label>
             <input name="cnhExpiration" type="date" value={formData.cnhExpiration} onChange={handleChange} min={getTodayDate()} required />
           </div>
+
           <div className={styles.inputGroup}>
             <label htmlFor="image">Imagem do Perfil</label>
             <input name="image" type="file" onChange={handleFileChange} accept=".png, .jpg, .jpeg, .heic" />
@@ -299,7 +299,7 @@ function FuncionarioCadastro() {
         </div>
 
         <div className={styles.actions}>
-          <button type="submit" className={styles.saveButton} >
+          <button type="submit" className={styles.saveButton} disabled={!isFormValid || loading}>
             {loading ? 'Salvando...' : 'Salvar Funcionário'}
           </button>
         </div>
