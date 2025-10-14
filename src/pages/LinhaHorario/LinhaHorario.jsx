@@ -6,9 +6,9 @@ import Modal from '../../components/Modal/Modal';
 
 // Dados estáticos para o mockup da tabela
 const mockData = [
-  { id: 1, linhaNome: '824EX1 - Pirapora Do Bom Jesus (Pq. Paiol) - Barueri (Centro)', horaInicio: '03:10', horaFim: '00:30', dia: 'Segunda a Sexta' },
-  { id: 2, linhaNome: '824EX1 - Pirapora Do Bom Jesus (Pq. Paiol) - Barueri (Centro)', horaInicio: '04:30', horaFim: '00:00', dia: 'Domingos e Feriados' },
-  { id: 3, linhaNome: '824EX1 - Pirapora Do Bom Jesus (Pq. Paiol) - Barueri (Centro)', horaInicio: '05:00', horaFim: '23:30', dia: 'Sábados' },
+  { id: 1, linhaNome: '824EX1 - Pirapora Do Bom Jesus (Pq. Paiol) - Barueri (Centro)', horaInicio: '03:10', dia: 'Segunda a Sexta' },
+  { id: 2, linhaNome: '824EX1 - Pirapora Do Bom Jesus (Pq. Paiol) - Barueri (Centro)', horaInicio: '04:30',dia: 'Domingos e Feriados' },
+  { id: 3, linhaNome: '824EX1 - Pirapora Do Bom Jesus (Pq. Paiol) - Barueri (Centro)', horaInicio: '05:00', dia: 'Sábados' },
 
 ];
 
@@ -66,7 +66,6 @@ function LinhaHorario() {
             <tr>
               <th>Linha</th>
               <th>Hora Início</th>
-              <th>Hora Fim</th>
               <th>Dia</th>
               <th>Ações</th>
             </tr>
@@ -76,7 +75,6 @@ function LinhaHorario() {
               <tr key={horario.id}>
                 <td>{horario.linhaNome}</td>
                 <td>{horario.horaInicio}</td>
-                <td>{horario.horaFim}</td>
                 <td>{horario.dia}</td>
                 <td className={styles.actionIcons}>
                   <FaEdit title="Editar" onClick={() => handleEditClick(horario.id)} />

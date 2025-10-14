@@ -141,6 +141,8 @@ function Linha() {
           {directionTypeOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.name}</option>)}
         </select>
         <select name="pageSize" value={pagination.pageSize} onChange={handlePageSizeChange} className={styles.filterSelect}>
+            <option value="2">2 por página</option>
+            <option value="5">5 por página</option>
           <option value="10">10 por página</option>
           <option value="20">20 por página</option>
           <option value="50">50 por página</option>

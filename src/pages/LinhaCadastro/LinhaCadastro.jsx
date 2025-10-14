@@ -3,7 +3,22 @@ import { useNavigate } from 'react-router-dom';
 import styles from './LinhaCadastro.module.css';
 import api from '../../services/api';
 import Modal from '../../components/Modal/Modal';
-import { FaInfoCircle } from 'react-icons/fa';
+
+
+
+const RequiredIndicator = () => (
+  <span className={styles.requiredTooltip} data-tooltip="Campo obrigatório">
+    *
+  </span>
+);
+
+// Componente para o 'i' verde com tooltip de informação
+const InfoTooltip = ({ text }) => (
+  <span className={styles.infoTooltip} data-tooltip={text}>
+   ⓘ
+  </span>
+);
+
 
 function LinhaCadastro() {
   const navigate = useNavigate();
@@ -21,23 +36,11 @@ function LinhaCadastro() {
   // Estados para popular os menus
   const [typeOptions, setTypeOptions] = useState([]);
   const [directionTypeOptions, setDirectionTypeOptions] = useState([]);
-
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState({ isOpen: false, message: '', isError: false });
-
-const RequiredIndicator = () => (
-  <span className={styles.requiredTooltip} data-tooltip="Campo obrigatório">
-    *
-  </span>
-);
-
-// Componente para o 'i' verde com tooltip de informação
-const InfoTooltip = ({ text }) => (
-  <span className={styles.infoTooltip} data-tooltip={text}>
-   ⓘ
-  </span>
-);
-
+ //estados para validações
+  const[errors] = useState({});
+  const[isFormValid, setIsFormValid] = useState (false); //default false because form is empty
 
 
   // Busca as opções para os menus da API
@@ -58,6 +61,25 @@ const InfoTooltip = ({ text }) => (
     fetchOptions();
   }, []);
 
+
+
+ useEffect(() => {
+    const requiredFields = [
+      'number', 'name', 'type', 'travelTime', 'mileage', 'directionType'
+     
+    ];
+
+    // Verifica se todos os campos obrigatórios estão preenchidos e se não há erros
+    const allRequiredFilled = requiredFields.every(field => formData[field] && formData[field].toString().trim() !== '');
+    const noErrors = Object.keys(errors).length === 0;
+    //atualiza o estado de validação do formulário
+    setIsFormValid(allRequiredFilled && noErrors);
+  }, [formData, errors]);
+
+ 
+ 
+
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevState => ({ ...prevState, [name]: value }));
@@ -65,14 +87,19 @@ const InfoTooltip = ({ text }) => (
 
   const handleSave = async (e) => {
     e.preventDefault();
-    setLoading(true);
+  
 
     // Validação simples dos campos obrigatórios
-    if (!formData.number || !formData.name || !formData.type || !formData.directionType) {
+    //if (!formData.number || !formData.name || !formData.type || !formData.directionType) {
+      //  setFeedback({ isOpen: true, message: "Preencha todos os campos obrigatórios.", isError: true });
+      //  setLoading(false);
+   // }
+
+   if (!isFormValid) {
         setFeedback({ isOpen: true, message: "Preencha todos os campos obrigatórios.", isError: true });
-        setLoading(false);
         return;
     }
+    setLoading(true);
 
     // Prepara o payload para a API, convertendo os IDs para número
     const payload = {
@@ -113,11 +140,11 @@ const InfoTooltip = ({ text }) => (
         <div className={styles.formGrid}>
           <div className={styles.inputGroup}>
             <label htmlFor="number">Número da Linha <RequiredIndicator /></label>
-            <input name="number" id="number" type="text" placeholder="Ex: 824EX1" value={formData.number} onChange={handleChange} required />
+            <input name="number" id="number" type="text" placeholder="Ex: 082TRO" value={formData.number} onChange={handleChange} required />
           </div>
           <div className={styles.inputGroup}>
             <label htmlFor="name">Nome da Linha <RequiredIndicator /></label>
-            <input name="name" id="name" type="text" placeholder="Ex: Jd. Isaura - Lapa" value={formData.name} onChange={handleChange} required />
+            <input name="name" id="name" type="text" placeholder="Ex: OSASCO - BARUERI" value={formData.name} onChange={handleChange} required />
           </div>
           <div className={styles.inputGroup}>
             <label htmlFor="type">Tipo <RequiredIndicator /></label>
@@ -130,11 +157,11 @@ const InfoTooltip = ({ text }) => (
             <label htmlFor="travelTime">Tempo de Viagem <RequiredIndicator />
             <InfoTooltip text="Tempo de viagem dado em horas. Ex: 01:30 (1 hora e meia)" />
             </label>
-            <input name="travelTime" id="travelTime" type="time" value={formData.travelTime} onChange={handleChange} />
+            <input name="travelTime" id="travelTime" type="time" value={formData.travelTime} onChange={handleChange} required/>
           </div>
           <div className={styles.inputGroup}>
             <label htmlFor="mileage">Quilometragem (KM)<RequiredIndicator /></label>
-            <input name="mileage" id="mileage" type="number" step="1.0" placeholder="Ex: 25.5" value={formData.mileage} onChange={handleChange} />
+            <input name="mileage" id="mileage" type="text"  placeholder="Ex: 25,150" value={formData.mileage} onChange={handleChange} required/>
           </div>
           <div className={styles.inputGroup}>
             <label htmlFor="directionType">Sentido<RequiredIndicator /></label>
@@ -146,7 +173,7 @@ const InfoTooltip = ({ text }) => (
         </div>
 
         <div className={styles.actions}>
-          <button type="submit" className={styles.saveButton} disabled={loading}>
+          <button type="submit" className={styles.saveButton} disabled={!isFormValid || loading}>
             {loading ? 'Salvando...' : 'Salvar Linha'}
           </button>
         </div>
