@@ -4,13 +4,15 @@ No terminal, dentro do projeto  use o comando
 ```bash
 npm install
 ```
-
+Instale a lib de gerar pdfs.
+```bash
+npm install jspdf jspdf-autotable
+```
 Ele vai instalar a pasta node_modules com as dependencias necessárias para rodar o projeto.
 Depois para startar o front e acessar pelo navegador rode:
 ```bash
 npm run dev
 ```
-
 packge.json
 ```bash
 {
