@@ -210,3 +210,27 @@
   color: var(--text-dark);
   font-weight: bold;
 }
+
+.headerButtons {
+  display: flex;
+  gap: 1rem;
+}
+
+.pdfButton {
+  background-color: #28a745; /* Verde */
+  color: var(--white);
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.2s;
+}
+
+.pdfButton:hover {
+  background-color: #218838;
+}

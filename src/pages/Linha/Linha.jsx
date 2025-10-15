@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Linha.module.css';
-import { FaEdit, FaTrash, FaSearch } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaSearch, FaFilePdf } from 'react-icons/fa';
 import api from '../../services/api';
 import Modal from '../../components/Modal/Modal';
 import { generatePageNumbers } from '../../utils/pagination';
+import jsPDF from 'jspdf'; 
+import 'jspdf-autotable'; 
 
 // Hook de Debounce para otimizar a busca
 const useDebounce = (value, delay) => {
@@ -85,7 +87,7 @@ function Linha() {
   useEffect(() => {
     fetchLinhas();
   }, [fetchLinhas]);
-
+  
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters(prev => ({ ...prev, [name]: value }));
@@ -118,13 +120,44 @@ function Linha() {
     }
   };
 
+  const handleGeneratePdfList = () => {
+    const doc = new jsPDF();
+
+    // Título do Documento
+    doc.text("Relatório de Linhas", 14, 15);
+
+    // Define os cabeçalhos da tabela
+    const head = [['Número', 'Nome', 'Tipo', 'Sentido']];
+
+    // Mapeia os dados das linhas para o formato que a tabela espera
+    const body = linhas.map(linha => [
+      linha.number,
+      linha.name,
+      linha.typeName,
+      linha.directionTypeName
+    ]);
+
+    doc.autoTable({
+      startY: 20, // Posição inicial da tabela, abaixo do título
+      head: head,
+      body: body,
+    });
+
+    doc.save('relatorio_linhas.pdf');
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.headerBar}>
         <h1>Linhas</h1>
+        <div className={styles.headerButtons}>
         <button className={styles.cadastrarBtn} onClick={handleCadastrarClick}>
           Cadastrar Linha
         </button>
+        <button className={styles.pdfButton} onClick={handleGeneratePdfList}>
+            <FaFilePdf /> Gerar PDF
+          </button>
+      </div>
       </div>
       
       <div className={styles.filterBar}>

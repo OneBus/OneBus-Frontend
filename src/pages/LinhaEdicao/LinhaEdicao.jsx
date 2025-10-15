@@ -28,7 +28,7 @@ function LinhaEdicao() {
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState({ isOpen: false, message: '', isError: false });
 
-  const[errors, setErrors] = useState({});
+  const[errors, setErrors] = useState({});//handleblur pode usar ela
   const[isFormValid, setIsFormValid] = useState (false); //default false because form is empty
 
   // Busca os dados da linha e as opções para os menus
