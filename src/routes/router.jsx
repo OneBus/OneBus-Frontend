@@ -28,6 +28,9 @@ import Manutencao from '../pages/Manutencao/Manutencao.jsx';
 import ManutencaoCadastro from '../pages/ManutencaoCadastro/ManutencaoCadastro.jsx';
 import ManutencaoEdicao from '../pages/ManutencaoEdicao/ManutencaoEdicao.jsx';
 
+import VeiculoOperacao from '../pages/VeiculoOperacao/VeiculoOperacao.jsx';
+import VeiculoOperacaoCadastro from '../pages/VeiculoOperacaoCadastro/VeiculoOperacaoCadastro.jsx';
+import VeiculoOperacaoEdicao from '../pages/VeiculoOperacaoEdicao/VeiculoOperacaoEdicao.jsx';
 
 const Placeholder = ({ title }) => (
     <div style={{ padding: '10rem' }}>
@@ -56,8 +59,7 @@ const AppRoutes = () => {
             <Route path="/veiculo/editar/:id" element={<VeiculoEdicao/>} />
 
 
-            <Route path="/veiculo-operacao" element={<Placeholder title="Tela de Veículo Operação" />} />
-
+            
 
             <Route path="/linha" element={<Linha/>} />
             <Route path="/linha/cadastrar" element={<LinhaCadastro />} />
@@ -74,6 +76,9 @@ const AppRoutes = () => {
             <Route path="/manutencao/cadastrar" element={<ManutencaoCadastro/>} />
             <Route path="/manutencao/editar/:id" element={<ManutencaoEdicao />} />
 
+            <Route path="/veiculo-operacao" element={<VeiculoOperacao />} />
+            <Route path="/veiculo-operacao/cadastrar" element={<VeiculoOperacaoCadastro />} />
+            <Route path="/veiculo-operacao/editar/:id" element={<VeiculoOperacaoEdicao />} />
            
             <Route path="/usuarios" element={<Placeholder title="Tela de Usuários" />} />
           </Routes>

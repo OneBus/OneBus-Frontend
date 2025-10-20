@@ -17,6 +17,7 @@ const InfoTooltip = ({ text }) => (
   ⓘ
   </span>
 );
+
 function VeiculoCadastro() {
   const navigate = useNavigate();
 
@@ -298,6 +299,7 @@ function VeiculoCadastro() {
               <label><input type="radio" name="hasAccessibility" value="false" checked={formData.hasAccessibility === false} onChange={handleChange} /> Não</label>
             </div>
           </div>
+          
           <div>
            <div className={`${styles.inputGroup} ${styles.fullWidth}`}>
             <label htmlFor="image">Imagem do Veículo (Opcional)</label>

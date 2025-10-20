@@ -10,6 +10,21 @@ const sizeFile = 5 * 1024 * 1024; // filtra arquivos ate 5MB
 const fileTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/heic']; //strings do tipo mime que armazenam o formato do arquivo
 
 // Componente principal
+// BOA PRÁTICA: Defina componentes auxiliares fora do componente principal
+const RequiredIndicator = () => (
+  <span className={styles.requiredTooltip} data-tooltip="Campo obrigatório">
+    *
+  </span>
+);
+
+const InfoTooltip = ({ text }) => (
+  <span className={styles.infoTooltip} data-tooltip={text}>
+  ⓘ
+  </span>
+);
+
+
+
 
 function FuncionarioCadastro() {
   const navigate = useNavigate();
@@ -224,21 +239,21 @@ function FuncionarioCadastro() {
       <form className={styles.form} onSubmit={handleSave} noValidate>
         <div className={styles.formGrid}>
           <div className={styles.inputGroup}>
-            <label htmlFor="name">Nome <span className={styles.required}>*</span></label>
-            <input name="name" type="text" value={formData.name} onChange={handleChange} required />
+            <label htmlFor="name">Nome <RequiredIndicator/></label>
+            <input name="name" type="text" value={formData.name} onChange={handleChange} maxLength="64"  required />
           </div>
           <div className={styles.inputGroup}>
-            <label htmlFor="rg">RG <span className={styles.required}>*</span></label>
-            <input name="rg" type="text" value={formData.rg} onChange={handleChange} onBlur={handleBlur} maxLength="11" required />
+            <label htmlFor="rg">RG <RequiredIndicator/> <InfoTooltip text="Coloque somente os números do RG" /></label> 
+            <input name="rg" type="text" value={formData.rg} onChange={handleChange} onBlur={handleBlur} maxLength="9" required />
             {errors.rg && <small className={styles.errorText}>{errors.rg}</small>}
           </div>
           <div className={styles.inputGroup}>
-            <label htmlFor="cpf">CPF <span className={styles.required}>*</span></label>
-            <input name="cpf" type="text" value={formData.cpf} onChange={handleChange} onBlur={handleBlur} required />
+            <label htmlFor="cpf">CPF<RequiredIndicator/> <InfoTooltip text="Coloque somente os números do CPF " /> </label>
+            <input name="cpf" type="text" value={formData.cpf} onChange={handleChange} onBlur={handleBlur} maxLength="14"  required />
             {errors.cpf && <small className={styles.errorText}>{errors.cpf}</small>}
           </div>
           <div className={styles.inputGroup}>
-  <label htmlFor="bloodType">Tipo Sanguíneo <span className={styles.required}>*</span></label>
+  <label htmlFor="bloodType">Tipo Sanguíneo <RequiredIndicator/></label>
   <select name="bloodType" value={formData.bloodType} onChange={handleChange} required>
 
     <option value="">Selecione...</option>
@@ -247,11 +262,11 @@ function FuncionarioCadastro() {
   </select>
 </div>
           <div className={styles.inputGroup}>
-            <label htmlFor="code">Matrícula (Código) <span className={styles.required}>*</span></label>
+            <label htmlFor="code">Matrícula (Código) <RequiredIndicator/></label>
             <input name="code" type="text" value={formData.code} onChange={handleChange} maxLength="10" required />
           </div>
    <div className={styles.inputGroup}>
-            <label htmlFor="role">Cargo <span className={styles.required}>*</span></label>
+            <label htmlFor="role">Cargo <RequiredIndicator/></label>
             <select name="role" value={formData.role} onChange={handleChange} required>
 
                 <option value="">Selecione...</option>
@@ -260,7 +275,7 @@ function FuncionarioCadastro() {
             </select>
           </div>
         <div className={styles.inputGroup}>
-  <label htmlFor="status">Status <span className={styles.required}>*</span></label>
+  <label htmlFor="status">Status <RequiredIndicator/></label>
    <select name="status" value={formData.status} onChange={handleChange} required>
 
       <option value="">Selecione...</option>
@@ -269,24 +284,24 @@ function FuncionarioCadastro() {
   </select>
 </div>
           <div className={styles.inputGroup}>
-            <label htmlFor="email">Email <span className={styles.required}>*</span></label>
-            <input name="email" type="email" value={formData.email} onChange={handleChange} required />
+            <label htmlFor="email">Email <RequiredIndicator/></label>
+            <input name="email" type="email" value={formData.email} onChange={handleChange} maxLength="32"  required />
           </div>
           <div className={styles.inputGroup}>
-            <label htmlFor="phone">Telefone <span className={styles.required}>*</span></label>
-            <input name="phone" type="text" value={formData.phone} onChange={handleChange} required />
+            <label htmlFor="phone">Telefone <RequiredIndicator/></label>
+            <input name="phone" type="text" value={formData.phone} onChange={handleChange} maxLength="20" required />
           </div>
             <div className={styles.inputGroup}>
-            <label htmlFor="hiringDate">Data da Contratação <span className={styles.required}>*</span></label>
+            <label htmlFor="hiringDate">Data da Contratação <RequiredIndicator/></label>
             <input name="hiringDate" type="date" value={formData.hiringDate} onChange={handleChange} max={getTodayDate()} required />
           </div>
           <div className={styles.inputGroup}>
-            <label htmlFor="cnhNumber">Número da CNH</label>
+            <label htmlFor="cnhNumber">Número da CNH <InfoTooltip text= "Campo obrigatório somente para motorista e motorista e cobrador" /></label>
             <input name="cnhNumber" type="text" value={formData.cnhNumber} onChange={handleChange} onBlur={handleBlur} maxLength="11" />
             {errors.cnhNumber && <small className={styles.errorText}>{errors.cnhNumber}</small>}
           </div>
           <div className={styles.inputGroup}>
-            <label htmlFor="cnhExpiration">Vencimento CNH <span className={styles.required}>*</span></label>
+            <label htmlFor="cnhExpiration">Vencimento CNH <RequiredIndicator/></label>
             <input name="cnhExpiration" type="date" value={formData.cnhExpiration} onChange={handleChange} min={getTodayDate()} required />
           </div>
 

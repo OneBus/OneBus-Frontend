@@ -314,19 +314,19 @@ function FuncionarioEdicao() {
         </div>
       </form>
 
-      <Modal isOpen={feedback.isOpen} onClose={handleCloseModal} showCloseButton={false} >
+     
+  <Modal isOpen={feedback.isOpen} onClose={handleCloseModal} showCloseButton={false}>
         <div className="feedback-modal-content">
-          <h3>{feedback.isError ? 'Aconteceu um Erro' : 'Sucesso!'}</h3>
+          <h3>{feedback.isError ? 'Ocorreu um Erro' : 'Sucesso!'}</h3>
           <p>{feedback.message}</p>
-
-       <div className="logout-modal-buttons">
-           
-          <button onClick={handleCloseModal} className="btn-primary">Fechar</button>
-        </div>
+          <button onClick={handleCloseModal} className="feedback-modal-button">Fechar</button>
         </div>
       </Modal>
+
     </div>
   );
 }
-
+//   depois de <p>  <div className="logout-modal-buttons">
+         // <button className="btn-primary" onClick={handleCloseModal}> Fechar</button>
+     
 export default FuncionarioEdicao;
