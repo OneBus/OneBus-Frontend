@@ -1,10 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Funcionario.module.css';
-import { FaEdit, FaTrash, FaSearch } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaSearch, FaFilePdf } from 'react-icons/fa';
 import api from '../../services/api';
 import Modal from '../../components/Modal/Modal';
 import { generatePageNumbers } from '../../utils/pagination';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+
+
 
 // Hook de Debounce
 const useDebounce = (value, delay) => {
@@ -27,11 +31,20 @@ function Funcionario() {
   const [pagination, setPagination] = useState({
     currentPage: 0, pageSize: 10, totalPages: 0, hasNextPage: false, hasPreviousPage: false,
   });
+  const [feedback, setFeedback] = useState({ isOpen: false, message: '', isError: false });
   const [sortConfig, setSortConfig] = useState({ field: 'id', order: 'Desc' });
   const [statusOptions, setStatusOptions] = useState([]);
   const [roleOptions, setRoleOptions] = useState([]);
   const debouncedSearchTerm = useDebounce(filters.value, 500);
 
+//novo estado para controlar o modl de pdf
+  const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
+  const [pdfOptions, setPdfOptions] = useState({
+    status: '',
+    limit: '', // Quantidade de resultados
+    sortAlphabetical: false // Ordem alfabética
+  });
+  const [pdfLoading, setPdfLoading] = useState(false); // Loading específico para o PDF
 
   // Efeito para buscar as opções dos filtros (status, cargos, etc.)
   useEffect(() => {
@@ -71,10 +84,21 @@ function Funcionario() {
       };
 
       const response = await api.get('/employees', { params });
-      
-      const { items, totalPages, currentPage, hasNextPage, hasPreviousPage } = response.data.value;
+
+      // Extrai TODAS as informações, incluindo totalItems
+      const { items, totalPages, currentPage, hasNextPage, hasPreviousPage, totalItems } = response.data.value;
+
       setFuncionarios(items);
-      setPagination(prev => ({ ...prev, totalPages, currentPage: currentPage - 1, hasNextPage, hasPreviousPage }));
+
+      // Salva TODAS as informações no estado de paginação
+      setPagination(prev => ({
+        ...prev,
+        totalPages,
+        currentPage: currentPage - 1, // Converte para 0-based
+        hasNextPage,
+        hasPreviousPage,
+        totalItems // Salva o total de itens aqui
+      }));
 
     } catch (err) {
       setError('Não foi possível carregar os funcionários.');
@@ -83,7 +107,6 @@ function Funcionario() {
       setLoading(false);
     }
   }, [pagination.currentPage, pagination.pageSize, debouncedSearchTerm, filters.status, filters.role, sortConfig]);
-
   // 2. O useEffect agora "assiste" à função 'fetchFuncionarios'
   useEffect(() => {
     fetchFuncionarios();
@@ -136,6 +159,73 @@ function Funcionario() {
   //});
 //};
 
+const handlePdfOptionsChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setPdfOptions(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const handleGeneratePdf = async () => {
+    setPdfLoading(true);
+    setError(null); // Limpa erros anteriores
+    try {
+      // Prepara os parâmetros para a API com base nas opções do modal
+      const params = {
+        CurrentPage: 1, // Sempre começa da primeira página para o PDF
+        // Usa o limite do modal, ou busca todos se o limite for vazio (ou um número alto)
+        PageSize: pdfOptions.limit || pagination.totalItems || 1000, 
+        Status: pdfOptions.status || null,
+        // Aplica ordenação alfabética se selecionado
+        OrderField: pdfOptions.sortAlphabetical ? 'name' : 'id',
+        OrderType: pdfOptions.sortAlphabetical ? 'Asc' : 'Desc',
+      };
+
+      // Busca os dados especificamente para o PDF
+      const response = await api.get('/employees', { params });
+      const pdfData = response.data.value.items || [];
+
+      if (pdfData.length === 0) {
+        setFeedback({ isOpen: true, message: 'Nenhum funcionário encontrado com os filtros selecionados para gerar o PDF.', isError: true });
+        setIsPdfModalOpen(false);
+        setPdfLoading(false);
+        return;
+      }
+
+      // Gera o PDF
+      const doc = new jsPDF();
+      doc.text("Relatório de Funcionários", 14, 15);
+      doc.setFontSize(10);
+      doc.text(`Filtros: Status=${pdfOptions.status || 'Todos'}, Limite=${pdfOptions.limit || 'Todos'}, Ordem=${pdfOptions.sortAlphabetical ? 'Alfabética' : 'Padrão'}`, 14, 22);
+
+      const head = [['Nome', 'Cargo', 'Status']];
+      const body = pdfData.map(func => [
+        func.name,
+        func.roleName,
+        func.statusName
+      ]);
+
+      doc.autoTable({
+        startY: 28,
+        head: head,
+        body: body,
+      });
+
+      doc.save('relatorio_funcionarios.pdf');
+      setIsPdfModalOpen(false); // Fecha o modal após gerar
+
+    } catch (err) {
+      setError('Erro ao gerar o PDF. Tente novamente.');
+      console.error("Erro ao buscar dados para PDF:", err);
+    } finally {
+      setPdfLoading(false);
+    }
+  };
+
+
+
+
   return (
     <div className={styles.container}>
       <div className={styles.headerBar}>
@@ -177,6 +267,12 @@ function Funcionario() {
     <option value="15">15 por página</option>
     <option value="20">20 por página</option>
   </select>
+
+
+  <button className={styles.pdfButton} onClick={() => setIsPdfModalOpen(true)}>
+          <FaFilePdf /> Gerar PDF
+        </button>
+      
       </div>
 
 
@@ -188,6 +284,7 @@ function Funcionario() {
       <div className={styles.tableContainer}>
         {loading ? ( <p className={styles.message}>Carregando...</p> ) : error ? ( <p className={styles.messageError}>{error}</p> ) : (
           <>
+          <div className={styles.tableContainer}>
             <table className={styles.table}>
               <thead>
                 <tr>
@@ -224,7 +321,7 @@ function Funcionario() {
                 )}
               </tbody>
             </table>
-            
+            </div>
           
             
           </>
@@ -278,6 +375,74 @@ function Funcionario() {
             <button className="btn-confirm" onClick={handleConfirmDelete}>Sim, Excluir</button>
           </div>
         </div>
+      </Modal>
+
+
+
+<Modal isOpen={isPdfModalOpen} onClose={() => setIsPdfModalOpen(false)}>
+        <div className="feedback-modal-content"> {/* Reutilizando estilo */}
+          <h3>Configurar Relatório PDF</h3>
+          
+          <div className={styles.pdfForm}>
+            <div className={styles.pdfInputGroup}>
+              <label htmlFor="pdfStatus">Filtrar por Status:</label>
+              <select 
+                id="pdfStatus" 
+                name="status" 
+                value={pdfOptions.status} 
+                onChange={handlePdfOptionsChange} 
+                className={styles.pdfSelect}
+              >
+                <option value="">Todos os Status</option>
+                {statusOptions.map(option => <option key={option.value} value={option.value}>{option.name}</option>)}
+              </select>
+            </div>
+
+            <div className={styles.pdfInputGroup}>
+              <label htmlFor="pdfLimit">Número máximo de resultados:</label>
+              <input 
+                id="pdfLimit" 
+                name="limit" 
+                type="number" 
+                min="1" 
+                placeholder="Todos" 
+                value={pdfOptions.limit} 
+                onChange={handlePdfOptionsChange}
+                className={styles.pdfInput}
+              />
+            </div>
+
+            <div className={styles.pdfCheckboxGroup}>
+              <input 
+                id="pdfSort" 
+                name="sortAlphabetical" 
+                type="checkbox" 
+                checked={pdfOptions.sortAlphabetical} 
+                onChange={handlePdfOptionsChange} 
+              />
+              <label htmlFor="pdfSort">Ordenar por nome (A-Z)</label>
+            </div>
+          </div>
+
+          {/* Exibe mensagem de erro dentro do modal, se houver */}
+          {error && <p className={styles.pdfError}>{error}</p>} 
+
+          <div className="logout-modal-buttons">
+            <button className="btn-cancel" onClick={() => setIsPdfModalOpen(false)} disabled={pdfLoading}>
+              Cancelar
+            </button>
+            <button className="btn-primary" onClick={handleGeneratePdf} disabled={pdfLoading}>
+              {pdfLoading ? 'Gerando...' : 'Gerar PDF'}
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Modal de feedback genérico (caso o handleGeneratePdf falhe e precise mostrar msg) */}
+      <Modal isOpen={feedback.isOpen && !isPdfModalOpen} onClose={() => setFeedback({ isOpen: false, message: '', isError: false })}>
+         <div className="feedback-modal-content">
+             {/* ... */}
+         </div>
       </Modal>
     </div>
   );

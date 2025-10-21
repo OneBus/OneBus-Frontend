@@ -49,6 +49,8 @@
   background-color: var(--white);
    border-radius: 15px;
   box-shadow: var(--shadow-sm);
+  align-items: center; /* Alinha verticalmente os itens do filtro */
+  flex-wrap: wrap; /* Permite que os itens quebrem linha em telas menores */
 }
 
 .searchContainer {
@@ -87,6 +89,7 @@
 /* Tabela e seus conteúdos */
 .tableContainer {
   background-color: var(--white);
+  border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Sombra suave */
   overflow: hidden; /* Garante que a borda arredondada se aplique ao conteúdo */
   margin-bottom: 2rem;
@@ -97,16 +100,37 @@
   border-collapse: collapse;
 }
 
+.table thead {
+  background-color: #e6f0f7; /* Um cinza-azulado bem claro, como você pediu */
+  color: var(--text-dark);
+  font-weight: 600;
+  text-align: left;
+}
+
 .table th {
   padding: 1rem 1.5rem;
   text-align: left;
-  background-color: var(--main-bg);
+  background-color: #e6f0f7; /* Um cinza-azulado bem claro, como você pediu */
   color: var(--text-muted);
   font-weight: 600;
   text-transform: uppercase;
   font-size: 0.8rem;
   letter-spacing: 0.5px;
 }
+
+.table tbody tr {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.table tbody tr:last-child {
+  border-bottom: none; /* Remove a borda da última linha */
+}
+
+.table tbody tr:hover {
+  background-color: #f9fafb; /* Pequeno destaque ao passar o mouse */
+}
+
+
 
 .table td {
   padding: 1rem 1.5rem;
@@ -213,4 +237,67 @@
   background-color: var(--main-bg); /* Fundo sutil para a página ativa */
   color: var(--text-dark);
   font-weight: bold;
+}
+
+/* Estilos para o formulário dentro do modal de PDF */
+.pdfForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+  text-align: left;
+}
+
+.pdfInputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pdfInputGroup label {
+  font-weight: 500;
+  color: var(--text-dark);
+}
+
+.pdfSelect,
+.pdfInput {
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.pdfCheckboxGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pdfError {
+    color: #ef4444; /* Vermelho */
+    font-size: 0.9rem;
+    margin-top: 1rem;
+    text-align: center;
+}
+
+/* Estilo para o botão PDF na barra de filtros */
+.pdfButton {
+  background-color: #28a745; /* Verde */
+  color: var(--white);
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.2s;
+  white-space: nowrap; /* Impede que o texto quebre */
+}
+
+.pdfButton:hover {
+  background-color: #218838;
 }
