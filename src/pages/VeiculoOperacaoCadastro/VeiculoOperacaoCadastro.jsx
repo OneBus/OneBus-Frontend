@@ -66,7 +66,7 @@ function VeiculoOperacaoCadastro() {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1>Alocar Nova Operação</h1>
+        <h1>Criar Nova Operação</h1>
         <button onClick={() => navigate('/veiculo-operacao')} className={styles.backButton}>
           Voltar para a Lista
         </button>

@@ -76,7 +76,7 @@ function VeiculoOperacaoEdicao() {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1>Editar Alocação: Linha {formData.linhaNome || '...'}</h1>
+        <h1>Editar Operação: Linha {formData.linhaNome || '...'}</h1>
         <button onClick={() => navigate('/veiculo-operacao')} className={styles.backButton}>
           Voltar para a Lista
         </button>

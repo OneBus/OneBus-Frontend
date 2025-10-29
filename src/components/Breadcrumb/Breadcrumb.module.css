@@ -1,0 +1,26 @@
+.breadcrumb {
+  padding: 1rem 0; /* Espaçamento vertical */
+  margin-bottom: 1.5rem; /* Espaço abaixo do breadcrumb */
+  font-size: 0.9rem;
+  color: var(--text-muted); /* Cor de texto secundária */
+}
+
+.breadcrumbLink {
+  color: var(--primary-blue); /* Cor principal para links */
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.breadcrumbLink:hover {
+  color: #0056b3; /* Azul mais escuro no hover */
+  text-decoration: underline;
+}
+
+.breadcrumbSeparator {
+  margin: 0 0.5rem; /* Espaçamento ao redor do '>' */
+}
+
+.breadcrumbCurrent {
+  color: var(--text-dark); /* Cor de texto principal para a página atual */
+  font-weight: 500;
+}

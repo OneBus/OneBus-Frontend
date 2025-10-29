@@ -8,6 +8,8 @@ import Login from './pages/Login/Login';
 import AppRoutes from './routes/router';
 import PrivateRoute from './routes/PrivateRoute.jsx';
 import Modal from './components/Modal/Modal'; // Verifique se este caminho está correto
+import Breadcrumb from './components/Breadcrumb/Breadcrumb';
+
 
 const DashboardLayout = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -37,9 +39,23 @@ const DashboardLayout = () => {
 
       <Header onToggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
         
-      <div style={{ flex: 1, marginLeft: isSidebarOpen ? '250px' : '80px', transition: 'margin-left 0.3s ease-in-out' }}>
+      <div style={
+        { flex: 1,
+         marginLeft: isSidebarOpen ? '250px' : '80px', 
+         transition: 'margin-left 0.3s ease-in-out',
+         paddingTop: '70px', 
+          // Padding lateral para o conteúdo não colar nas bordas
+          paddingLeft: '1rem', 
+          paddingRight: '1rem'
+         
+         }}>
+        <Breadcrumb />
+        
         <AppRoutes />
       </div>
+
+
+
 
       {/* Modal de confirmação de logout */}
       <Modal isOpen={isLogoutModalOpen} onClose={() => setLogoutModalOpen(false)}>
