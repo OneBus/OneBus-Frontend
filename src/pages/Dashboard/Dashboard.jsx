@@ -1,33 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './Dashboard.module.css';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import api from '../../services/api';
 
-// --- DADOS ESTÁTICOS (MOCK) ---
-// Substitua por chamadas de API quando os endpoints de estatísticas existirem
-
-// Mock para o gráfico de Veículos
-const vehicleData = [
-  { name: 'Disponível', value: 3 },
-  { name: 'Em Operação', value: 18 },
-  { name: 'Em Manutenção', value: 3 },
-  { name: 'Desativado', value: 0 },
-  { name: 'Reservado', value: 4 },
-];
-const totalVeiculos = vehicleData.reduce((sum, entry) => sum + entry.value, 0);
-
-// Mock para o gráfico de Funcionários
-const employeeData = [
-  { name: 'Ativo', value: 30 },
-  { name: 'Férias', value: 4 },
-  { name: 'Licença', value: 1 },
-  { name: 'Folga', value: 5 },
-  { name: 'Ausente', value: 1 },
-  { name: 'Desligado', value: 0 },
-  { name: 'Em Contratação', value: 2 },
-];
-const totalFuncionarios = employeeData.reduce((sum, entry) => sum + entry.value, 0);
-
-// Cores que combinam com o design do OneBus (azul, roxo, cinzas)
+// Cores que combinam com o design do OneBus
 const COLORS_VEHICLES = ['#00A0DC', '#28a745', '#ffc107', '#6c757d', '#9556d7'];
 const COLORS_EMPLOYEES = ['#28a745', '#00A0DC', '#9556d7', '#ffc107', '#dc3545', '#6c757d', '#17a2b8'];
 
@@ -43,12 +19,105 @@ const CustomCenterLabel = ({ total, title }) => (
   </>
 );
 
+// NOVO: Componente para a Janela Flutuante de Detalhes
+const DashboardTooltip = ({ activeData, type }) => {
+  if (!activeData || !activeData.items) {
+    return <div className={styles.tooltipWrapper} style={{ opacity: 0 }} />;
+  }
+
+  const title = activeData.name;
+  const items = activeData.items;
+
+  return (
+    <div className={styles.tooltipWrapper}>
+      <h4 className={styles.tooltipTitle}>{title} ({items.length})</h4>
+      <div className={styles.tooltipList}>
+        {type === 'vehicle' ? (
+          // Lista de Veículos
+          items.map(item => (
+            <div key={item.id} className={styles.tooltipItem}>
+              <img
+                src={item.image ? `data:image/png;base66,${item.image}` : `https://ui-avatars.com/api/?name=${item.prefix}&background=random`}
+                alt={item.prefix}
+                className={styles.tooltipAvatar}
+              />
+              <div className={styles.tooltipInfo}>
+                <span className={styles.tooltipPrimary}>{item.prefix} - {item.model}</span>
+                <span className={styles.tooltipSecondary}>{item.plate} | Chassi: {item.busChassisModel || 'N/A'}</span>
+              </div>
+            </div>
+          ))
+        ) : (
+          // Lista de Funcionários
+          items.map(item => (
+            <div key={item.id} className={styles.tooltipItem}>
+              <img
+                src={item.image ? `data:image/png;base66,${item.image}` : `https://ui-avatars.com/api/?name=${item.name}&background=random`}
+                alt={item.name}
+                className={styles.tooltipAvatar}
+              />
+              <div className={styles.tooltipInfo}>
+                <span className={styles.tooltipPrimary}>{item.name}</span>
+                <span className={styles.tooltipSecondary}>{item.roleName} | Código: {item.code}</span>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+};
+
 function Dashboard() {
-  // Aqui você buscaria os dados da API com useEffect, ex:
-  // useEffect(() => {
-  //   api.get('/dashboard/vehicle-summary').then(res => setVehicleData(res.data.value));
-  //   api.get('/dashboard/employee-summary').then(res => setEmployeeData(res.data.value));
-  // }, []);
+  const [vehicleData, setVehicleData] = useState([]);
+  const [employeeData, setEmployeeData] = useState([]);
+  const [totalVeiculos, setTotalVeiculos] = useState(0);
+  const [totalFuncionarios, setTotalFuncionarios] = useState(0);
+  
+  // Estados para a tooltip interativa
+  const [hoveredVehicleData, setHoveredVehicleData] = useState(null);
+  const [hoveredEmployeeData, setHoveredEmployeeData] = useState(null);
+
+  useEffect(() => {
+    // Busca e transforma os dados dos Veículos
+    const fetchVehicles = async () => {
+      try {
+        const response = await api.get('/dashboards/vehicles');
+        const data = response.data.value;
+        setTotalVeiculos(data.totalCount);
+        // Mapeia os dados da API para o formato do gráfico
+        const formattedData = data.vehicleCounts.map(item => ({
+          name: item.statusName,
+          value: item.count,
+          items: item.vehicles, // Guarda a lista de veículos para a tooltip
+        }));
+        setVehicleData(formattedData);
+      } catch (err) {
+        console.error("Erro ao buscar dados de veículos:", err);
+      }
+    };
+
+    // Busca e transforma os dados dos Funcionários
+    const fetchEmployees = async () => {
+      try {
+        const response = await api.get('/dashboards/employees');
+        const data = response.data.value;
+        setTotalFuncionarios(data.totalCount);
+        // Mapeia os dados da API para o formato do gráfico
+        const formattedData = data.employeeCounts.map(item => ({
+          name: item.statusName,
+          value: item.count,
+          items: item.employees, // Guarda a lista de funcionários para a tooltip
+        }));
+        setEmployeeData(formattedData);
+      } catch (err) {
+        console.error("Erro ao buscar dados de funcionários:", err);
+      }
+    };
+
+    fetchVehicles();
+    fetchEmployees();
+  }, []);
 
   return (
     <div className={styles.container}>
@@ -57,58 +126,66 @@ function Dashboard() {
       </div>
 
       <div className={styles.chartsGrid}>
-        {/* Gráfico de Veículos */}
+        {/* --- Gráfico de Veículos --- */}
         <div className={styles.chartContainer}>
           <h3 className={styles.chartTitle}>Resumo de Veículos</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={vehicleData}
-                cx="50%"
-                cy="50%"
-                innerRadius={70}
-                outerRadius={100}
-                fill="#8884d8"
-                paddingAngle={2}
-                dataKey="value"
-                nameKey="name"
-              >
-                {vehicleData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS_VEHICLES[index % COLORS_VEHICLES.length]} />
-                ))}
-              </Pie>
-              <CustomCenterLabel total={totalVeiculos} title="Veículos Totais" />
-              <Tooltip />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
+          <div className={styles.chartWithTooltip}>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={vehicleData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={70}
+                  outerRadius={100}
+                  fill="#8884d8"
+                  paddingAngle={2}
+                  dataKey="value"
+                  nameKey="name"
+                  onMouseEnter={(data) => setHoveredVehicleData(data.payload)}
+                  onMouseLeave={() => setHoveredVehicleData(null)}
+                >
+                  {vehicleData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS_VEHICLES[index % COLORS_VEHICLES.length]} />
+                  ))}
+                </Pie>
+                <CustomCenterLabel total={totalVeiculos} title="Veículos Totais" />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+            <DashboardTooltip activeData={hoveredVehicleData} type="vehicle" />
+          </div>
         </div>
 
-        {/* Gráfico de Funcionários */}
+        {/* --- Gráfico de Funcionários --- */}
         <div className={styles.chartContainer}>
           <h3 className={styles.chartTitle}>Resumo de Funcionários</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={employeeData}
-                cx="50%"
-                cy="50%"
-                innerRadius={70}
-                outerRadius={100}
-                fill="#8884d8"
-                paddingAngle={2}
-                dataKey="value"
-                nameKey="name"
-              >
-                {employeeData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS_EMPLOYEES[index % COLORS_EMPLOYEES.length]} />
-                ))}
-              </Pie>
-              <CustomCenterLabel total={totalFuncionarios} title="Funcionários" />
-              <Tooltip />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
+          <div className={styles.chartWithTooltip}>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={employeeData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={70}
+                  outerRadius={100}
+                  fill="#8884d8"
+                  paddingAngle={2}
+                  dataKey="value"
+                  nameKey="name"
+                  onMouseEnter={(data) => setHoveredEmployeeData(data.payload)}
+                  onMouseLeave={() => setHoveredEmployeeData(null)}
+                >
+                  {employeeData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS_EMPLOYEES[index % COLORS_EMPLOYEES.length]} />
+                  ))}
+                </Pie>
+                <CustomCenterLabel total={totalFuncionarios} title="Funcionários" />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+            <DashboardTooltip activeData={hoveredEmployeeData} type="employee" />
+          </div>
         </div>
       </div>
     </div>
