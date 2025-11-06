@@ -15,7 +15,7 @@ const RequiredIndicator = () => (
 function ManutencaoCadastro() {
   const navigate = useNavigate();
 
-  // Estado alinhado com a API
+  // CORRIGIDO: Nomes alinhados com a API
   const [formData, setFormData] = useState({
     vehicleId: '',
     sector: '',
@@ -23,7 +23,7 @@ function ManutencaoCadastro() {
     startDate: '',
     endDate: '',
     surveyExpiration: '',
-    // cost: 0, // Adicione se o custo for um campo do formulário
+    cost: '', // ADICIONADO: Campo de custo
   });
 
   // Estados para popular os menus
@@ -56,12 +56,10 @@ function ManutencaoCadastro() {
   }, []);
 
   // Validação em tempo real para habilitar/desabilitar o botão
+ 
   useEffect(() => {
-    // Define quais campos são obrigatórios
     const requiredFields = ['vehicleId', 'sector', 'description', 'startDate'];
     const allRequiredFilled = requiredFields.every(field => formData[field] && formData[field].toString().trim() !== '');
-    
-    // Atualiza o estado de validade (adicionaremos a verificação de erros se necessário)
     setIsFormValid(allRequiredFilled);
   }, [formData]);
 
@@ -78,16 +76,15 @@ function ManutencaoCadastro() {
     }
     setLoading(true);
 
-    // Prepara o payload para a API
+    // CORRIGIDO: Payload alinhado com a API e nomes do estado
     const payload = {
       vehicleId: parseInt(formData.vehicleId, 10),
       sector: parseInt(formData.sector, 10),
       description: formData.description,
       startDate: formData.startDate,
-      // Envia null se as datas opcionais não forem preenchidas
       endDate: formData.endDate || null, 
       surveyExpiration: formData.surveyExpiration || null,
-      // cost: formData.cost ? parseFloat(formData.cost) : 0, // Se tiver campo de custo
+      cost: formData.cost ? parseFloat(formData.cost) : 0, // ADICIONADO: Envia 0 se vazio
     };
     
     try {
@@ -100,13 +97,14 @@ function ManutencaoCadastro() {
       setLoading(false);
     }
   };
+ 
   
   const handleCloseModal = () => {
     setFeedback({ isOpen: false, message: '', isError: false });
     if (!feedback.isError) navigate('/manutencao');
   };
 
-  return (
+return (
     <div className={styles.container}>
       <div className={styles.header}>
         <h1>Agendar Nova Manutenção</h1>
@@ -117,19 +115,17 @@ function ManutencaoCadastro() {
       
       <form className={styles.form} onSubmit={handleSave} noValidate>
         <div className={styles.formGrid}>
-          {/* Campo Prefixo/Veículo */}
+          {/* CORRIGIDO: 'name' agora é 'vehicleId' */}
           <div className={styles.inputGroup}>
             <label htmlFor="vehicleId">Veículo (Prefixo) <RequiredIndicator /></label>
             <select name="vehicleId" id="vehicleId" value={formData.vehicleId} onChange={handleChange} required>
               <option value="">Selecione o veículo...</option>
               {vehicleOptions.map(vehicle => (
-                // Guarda o ID, mas mostra o prefixo para o usuário
                 <option key={vehicle.id} value={vehicle.id}>{vehicle.prefix}</option> 
               ))}
             </select>
           </div>
 
-          {/* Campo Setor */}
           <div className={styles.inputGroup}>
             <label htmlFor="sector">Setor <RequiredIndicator /></label>
             <select name="sector" id="sector" value={formData.sector} onChange={handleChange} required>
@@ -138,25 +134,30 @@ function ManutencaoCadastro() {
             </select>
           </div>
 
-          {/* Campo Data Início */}
+          {/* CORRIGIDO: 'name' e 'type' alterados */}
           <div className={styles.inputGroup}>
-            <label htmlFor="startDate">Data e Hora de Início <RequiredIndicator /></label>
-            <input name="startDate" id="startDate" type="datetime-local" value={formData.startDate} onChange={handleChange} required />
+            <label htmlFor="startDate">Data de Início <RequiredIndicator /></label>
+            <input name="startDate" id="startDate" type="date" value={formData.startDate} onChange={handleChange} required />
           </div>
 
-          {/* Campo Data Término (Opcional) */}
+          {/* CORRIGIDO: 'name' e 'type' alterados */}
           <div className={styles.inputGroup}>
-            <label htmlFor="endDate">Data e Hora de Término</label>
-            <input name="endDate" id="endDate" type="datetime-local" value={formData.endDate} onChange={handleChange} />
+            <label htmlFor="endDate">Data de Término</label>
+            <input name="endDate" id="endDate" type="date" value={formData.endDate} onChange={handleChange} />
           </div>
           
-          {/* Campo Vencimento da Vistoria (Opcional) */}
+          {/* CORRIGIDO: 'name' alterado */}
           <div className={styles.inputGroup}>
             <label htmlFor="surveyExpiration">Vencimento da Vistoria</label>
             <input name="surveyExpiration" id="surveyExpiration" type="date" value={formData.surveyExpiration} onChange={handleChange} />
           </div>
 
-          {/* Campo Descrição */}
+          {/* ADICIONADO: Novo campo de Custo */}
+          <div className={styles.inputGroup}>
+            <label htmlFor="cost">Custo (R$)</label>
+            <input name="cost" id="cost" type="number" step="0.01" placeholder="0.00" value={formData.cost} onChange={handleChange} />
+          </div>
+
           <div className={`${styles.inputGroup} ${styles.fullWidth}`}>
             <label htmlFor="description">Descrição do Serviço <RequiredIndicator /></label>
             <textarea name="description" id="description" rows="4" placeholder="Descreva o serviço a ser realizado..." value={formData.description} onChange={handleChange} required></textarea>
@@ -170,14 +171,16 @@ function ManutencaoCadastro() {
         </div>
       </form>
       <Modal isOpen={feedback.isOpen} onClose={handleCloseModal}>
-        <div className="feedback-modal-content">
+       <div className="feedback-modal-content">
           <h3>{feedback.isError ? 'Ocorreu um Erro' : 'Sucesso!'}</h3>
           <p>{feedback.message}</p>
           <button onClick={handleCloseModal} className="feedback-modal-button">Fechar</button>
         </div>
+     
       </Modal>
     </div>
   );
 }
 
 export default ManutencaoCadastro;
+        

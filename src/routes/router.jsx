@@ -32,6 +32,9 @@ import VeiculoOperacao from '../pages/VeiculoOperacao/VeiculoOperacao.jsx';
 import VeiculoOperacaoCadastro from '../pages/VeiculoOperacaoCadastro/VeiculoOperacaoCadastro.jsx';
 import VeiculoOperacaoEdicao from '../pages/VeiculoOperacaoEdicao/VeiculoOperacaoEdicao.jsx';
 
+import Dashboard from '../pages/Dashboard/Dashboard.jsx';
+
+
 const Placeholder = ({ title }) => (
     <div style={{ padding: '10rem' }}>
       <h1>{title}</h1>
@@ -42,6 +45,8 @@ const AppRoutes = () => {
   return (
     
      <Routes>
+
+            <Route path="/" element={<Dashboard />} /> {/* Rota Principal */}
              {/*<Route path="/" element={<VeiculoOperacao />} />*/}
             <Route path="/funcionario" element={<Funcionario />} />
             <Route path="/funcionarios/cadastrar" element={<FuncionarioCadastro />} />
@@ -81,6 +86,9 @@ const AppRoutes = () => {
             <Route path="/veiculo-operacao/editar/:id" element={<VeiculoOperacaoEdicao />} />
            
             <Route path="/usuarios" element={<Placeholder title="Tela de Usuários" />} />
+
+
+
           </Routes>
     
   );
